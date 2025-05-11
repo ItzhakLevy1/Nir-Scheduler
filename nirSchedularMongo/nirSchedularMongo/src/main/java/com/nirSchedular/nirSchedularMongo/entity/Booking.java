@@ -19,4 +19,14 @@ public class Booking {
 
     @DBRef
     private Appointment appointment;   // The appointment associated with this booking
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id='" + id + '\'' +
+                ", bookingConfirmationCode='" + bookingConfirmationCode + '\'' +
+                ", user=" + user +
+                ", appointment=" + appointment +
+                '}';
+    }
 }
