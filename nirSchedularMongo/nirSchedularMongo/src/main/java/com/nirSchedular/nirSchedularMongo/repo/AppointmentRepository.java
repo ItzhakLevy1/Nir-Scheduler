@@ -1,0 +1,31 @@
+package com.nirSchedular.nirSchedularMongo.repo;
+
+import com.nirSchedular.nirSchedularMongo.entity.Appointment;
+import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+
+import java.util.List;
+
+public interface AppointmentRepository extends MongoRepository<Appointment, String> {
+
+    @Aggregation(" {$group: { _id: '$appointmentType' }}") // Aggregation to group by appointment type
+    List<String> findDistinctAppointmentType(); // Custom method to find distinct appointment types incase of multiple appointment types in the same collection
+
+    @Query("{ 'bookings' : {$size: 0 }}") // Query to find all available appointments, could have also be written like this : @Query("{ 'isAvailable' : true }")
+    List<Appointment> findAllAvailableAppointments(); // Custom method to find all available appointments
+
+    List<Appointment> findByAppointmentTypeLikeAndIdNotIn(String appointmentType, List<String> bookedAppointmentIds); // Custom method to find appointments by type and exclude booked ones
+}
+
+
+/*
+   This interface extends MongoRepository, which provides CRUD operations for the Appointment entity
+   The first parameter is the entity type (Appointment), and the second is the type of the entity's ID (String)
+   No additional methods are defined here, but you can add custom query methods if needed
+   For example, you could add a method to find appointments by a specific field, like date or user
+   Example: List<Appointment> findByDate(Date date);
+   You can also use Spring Data's query derivation feature to create methods based on the naming convention
+   For example, if you have a field 'date' in the Appointment entity, you could create a method like:
+   List<Appointment> findByDate(Date date);
+ */
