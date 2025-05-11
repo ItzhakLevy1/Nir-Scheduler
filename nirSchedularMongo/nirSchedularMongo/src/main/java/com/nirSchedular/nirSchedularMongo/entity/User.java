@@ -18,7 +18,7 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id // Marks this field as the primary identifier for the MongoDB document
-    private String id;
+    private String id;  // Unique identifier for each user, which MongoDB will generate automatically
 
     @NotBlank(message = "Email number is required") // Ensures Email is not blank
     private String email; // Email of the user
