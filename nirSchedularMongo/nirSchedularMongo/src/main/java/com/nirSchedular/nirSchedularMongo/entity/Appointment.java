@@ -16,6 +16,8 @@ public class Appointment {
     @Id // Marks this field as the primary identifier for the MongoDB document
     private String id;   // Unique identifier for each appointment, which MongoDB will generate automatically
 
+    private String appointmentType;   // Type of appointment (e.g., "Check-in", "Check-out")
+
     @DBRef  // Indicates that this field references another MongoDB document
     private List<Booking> bookings = new ArrayList<>();   // List of bookings associated with this appointment from the bookings collection
 

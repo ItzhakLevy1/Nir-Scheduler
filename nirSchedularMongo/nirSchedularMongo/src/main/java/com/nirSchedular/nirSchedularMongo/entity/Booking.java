@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+
 @Data   // Lombok will generate getters, setters, toString, equals, and hashCode methods
 @Document(collection = "bookings") // This class maps to the 'bookings' collection in MongoDB
 public class Booking {
@@ -19,6 +21,8 @@ public class Booking {
 
     @DBRef
     private Appointment appointment;   // The appointment associated with this booking
+
+    private LocalDate date;   // The date of the booking
 
     @Override
     public String toString() {
