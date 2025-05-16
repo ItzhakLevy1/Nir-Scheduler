@@ -18,6 +18,8 @@ public class Appointment {
 
     private String appointmentType;   // Type of appointment (e.g., "Check-in", "Check-out")
 
+    private String appointmentDescription;   // Description of the appointment
+
     @DBRef  // Indicates that this field references another MongoDB document
     private List<Booking> bookings = new ArrayList<>();   // List of bookings associated with this appointment from the bookings collection
 
