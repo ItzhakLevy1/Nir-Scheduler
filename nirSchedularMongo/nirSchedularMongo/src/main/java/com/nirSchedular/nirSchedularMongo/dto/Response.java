@@ -23,6 +23,16 @@ public class Response {
     private List<UserDTO> userList;   // List of users
     private List<AppointmentDTO> appointmentList;   // List of appointments
     private List<BookingDTO> bookingList;   // List of bookings
+
+    // Constructor that accepts message and statusCode
+    public Response(String message, int statusCode) {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+
+    public Response() {
+
+    }
 }
 
 /* This Response DTO is designed to standardize the API responses your backend sends to the frontend or client applications. */
