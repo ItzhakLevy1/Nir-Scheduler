@@ -137,6 +137,36 @@ public class Utils {
      * @param user The User entity.
      * @return UserDTO with nested BookingDTO list including appointment/user data.
      */
+
+    public static BookingDTO mapBookingEntityToBookingDTOPlusBookedAppointments(Booking booking, boolean mapUser) {
+        BookingDTO bookingDTO = new BookingDTO();
+
+        bookingDTO.setId(booking.getId());
+        bookingDTO.setDate(booking.getDate());
+        bookingDTO.setBookingConfirmationCode(booking.getBookingConfirmationCode());
+
+        if (mapUser) {
+            // Add a null check before mapping the user
+            if (booking.getUser() != null) {
+                bookingDTO.setUser(Utils.mapUserEntityToUserDTO(booking.getUser()));
+            } else {
+                System.out.println("Booking user is null.");
+            }
+        }
+
+        if (booking.getAppointment() != null) {
+            AppointmentDTO roomDTO = new AppointmentDTO();
+            roomDTO.setId(booking.getAppointment().getId());
+            roomDTO.setAppointmentType(booking.getAppointment().getAppointmentType());
+            roomDTO.setAppointmentDescription(booking.getAppointment().getAppointmentDescription());
+            bookingDTO.setAppointment(roomDTO);
+        } else {
+            System.out.println("Booking appointment is null.");
+        }
+
+        return bookingDTO;
+    }
+
     public static UserDTO mapUserEntityToUserDTOPlusUserBookingsAndAppointments(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
