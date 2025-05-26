@@ -1,4 +1,4 @@
-package com.nirSchedular.nirSchedularMongo.controller;
+package com.nirSchedular.nirSchedularMongo.controllers;
 
 import com.nirSchedular.nirSchedularMongo.dto.LoginRequest;
 import com.nirSchedular.nirSchedularMongo.dto.Response;
