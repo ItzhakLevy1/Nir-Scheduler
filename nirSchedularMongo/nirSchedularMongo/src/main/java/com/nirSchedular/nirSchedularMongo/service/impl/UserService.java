@@ -36,6 +36,16 @@ public class UserService implements IUserService {
 
 
 
+    /**
+     * Utility method to check if an email is already taken.
+     *
+     * @param email the email to check.
+     * @return true if the email exists in the repository, false otherwise.
+     */
+    public boolean isEmailTaken(String email) {
+
+        return userRepository.existsByEmail(email);
+    }
 
     // Registers a new user
     @Override

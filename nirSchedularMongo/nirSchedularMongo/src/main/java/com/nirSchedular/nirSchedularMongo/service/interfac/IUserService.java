@@ -10,6 +10,8 @@ import com.nirSchedular.nirSchedularMongo.entity.User;
  */
 public interface IUserService {
 
+    boolean isEmailTaken(String email);
+
     /**
      * Registers a new user in the system.
      *
