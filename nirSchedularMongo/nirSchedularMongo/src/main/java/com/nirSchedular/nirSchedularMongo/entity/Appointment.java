@@ -1,33 +1,23 @@
 package com.nirSchedular.nirSchedularMongo.entity;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-@Data   // Lombok will generate getters, setters, toString, equals, and hashCode methods
 @Document(collection = "appointments") // Indicates this is a MongoDB document stored in the 'appointments' collection
-
+@Data                   // Generates getters, setters, toString, equals, and hashCode
+@NoArgsConstructor      // Generates a no-argument constructor
+@AllArgsConstructor     // Generates a constructor with all fields
+@Builder                // Enables the builder pattern (handy for creating objects, especially in tests or complex services
 public class Appointment {
 
     @Id // Marks this field as the primary identifier for the MongoDB document
-    private String id;   // Unique identifier for each appointment, which MongoDB will generate automatically
+    private String id;
 
-    private String appointmentType;   // Type of appointment (e.g., "Check-in", "Check-out")
-
-    private String appointmentDescription;   // Description of the appointment
-
-    @DBRef  // Indicates that this field references another MongoDB document
-    private List<Booking> bookings = new ArrayList<>();   // List of bookings associated with this appointment from the bookings collection
-
-    @Override // Generates a string representation of the Appointment object
-    public String toString() {
-        return "Appointment{" +
-                "id='" + id + '\'' +
-                ", bookings=" + bookings +
-                '}';
-    }
+    private String userEmail;
+    private LocalDate date;
+    private LocalTime time;
 }
