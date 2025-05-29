@@ -61,8 +61,10 @@ public class Utils {
     public static AppointmentDTO mapAppointmentEntityToAppointmentDTO(Appointment appointment) {
         AppointmentDTO appointmentDTO = new AppointmentDTO();
         appointmentDTO.setId(appointment.getId());
-        appointmentDTO.setAppointmentType(appointment.getAppointmentType());
-        appointmentDTO.setAppointmentDescription(appointment.getAppointmentDescription());
+        appointmentDTO.setUserEmail(appointment.getUserEmail());
+        appointmentDTO.setDate(appointment.getDate());
+        appointmentDTO.setTimeSlot(appointment.getTimeSlot());
+        appointmentDTO.setBooked(appointment.isBooked());
         return appointmentDTO;
     }
 
@@ -92,14 +94,10 @@ public class Utils {
     public static AppointmentDTO mapAppointmentEntityToAppointmentDTOPlusBookings(Appointment appointment) {
         AppointmentDTO appointmentDTO = new AppointmentDTO();
         appointmentDTO.setId(appointment.getId());
-        appointmentDTO.setAppointmentType(appointment.getAppointmentType());
-        appointmentDTO.setAppointmentDescription(appointment.getAppointmentDescription());
-
-        if (appointment.getBookings() != null) {
-            appointmentDTO.setBookings(appointment.getBookings().stream()
-                    .map(Utils::mapBookingEntityToBookingDTO)
-                    .collect(Collectors.toList()));
-        }
+        appointmentDTO.setUserEmail(appointment.getUserEmail());
+        appointmentDTO.setDate(appointment.getDate());
+        appointmentDTO.setTimeSlot(appointment.getTimeSlot());
+        appointmentDTO.setBooked(appointment.isBooked());
 
         return appointmentDTO;
     }
@@ -132,12 +130,12 @@ public class Utils {
     }
 
     /**
-     * Maps a User entity to a UserDTO including their bookings and associated appointment data.
+     * Maps a Booking entity to a BookingDTO including nested user and appointment data if available.
      *
-     * @param user The User entity.
-     * @return UserDTO with nested BookingDTO list including appointment/user data.
+     * @param booking  The Booking entity.
+     * @param mapUser  Flag to indicate whether the user should also be mapped.
+     * @return BookingDTO with nested AppointmentDTO and optionally UserDTO.
      */
-
     public static BookingDTO mapBookingEntityToBookingDTOPlusBookedAppointments(Booking booking, boolean mapUser) {
         BookingDTO bookingDTO = new BookingDTO();
 
@@ -146,7 +144,7 @@ public class Utils {
         bookingDTO.setBookingConfirmationCode(booking.getBookingConfirmationCode());
 
         if (mapUser) {
-            // Add a null check before mapping the user
+            // Safely map the user if it exists
             if (booking.getUser() != null) {
                 bookingDTO.setUser(Utils.mapUserEntityToUserDTO(booking.getUser()));
             } else {
@@ -155,17 +153,22 @@ public class Utils {
         }
 
         if (booking.getAppointment() != null) {
-            AppointmentDTO roomDTO = new AppointmentDTO();
-            roomDTO.setId(booking.getAppointment().getId());
-            roomDTO.setAppointmentType(booking.getAppointment().getAppointmentType());
-            roomDTO.setAppointmentDescription(booking.getAppointment().getAppointmentDescription());
-            bookingDTO.setAppointment(roomDTO);
+            Appointment appointment = booking.getAppointment();
+            AppointmentDTO appointmentDTO = new AppointmentDTO();
+            appointmentDTO.setId(appointment.getId());
+            appointmentDTO.setUserEmail(appointment.getUserEmail());
+            appointmentDTO.setDate(appointment.getDate());
+            appointmentDTO.setTimeSlot(appointment.getTimeSlot());
+            appointmentDTO.setBooked(appointment.isBooked());
+
+            bookingDTO.setAppointment(appointmentDTO);
         } else {
             System.out.println("Booking appointment is null.");
         }
 
         return bookingDTO;
     }
+
 
     public static UserDTO mapUserEntityToUserDTOPlusUserBookingsAndAppointments(User user) {
         UserDTO userDTO = new UserDTO();

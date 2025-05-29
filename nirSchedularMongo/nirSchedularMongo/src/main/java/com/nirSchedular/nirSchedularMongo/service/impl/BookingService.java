@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,7 +50,6 @@ public class BookingService implements IBookingService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new OurException("User not found"));
 
-            // Set booking info
             String bookingConfirmationCode = Utils.generateRandomConfirmationCode(10);
 
             bookingRequest.setAppointment(appointment);
@@ -58,25 +58,22 @@ public class BookingService implements IBookingService {
 
             Booking savedBooking = bookingRepository.save(bookingRequest);
 
-            List<Booking> userBookings = user.getBookings();
+            List<Booking> userBookings = user.getBookings() != null ? user.getBookings() : new ArrayList<>();
             userBookings.add(savedBooking);
             user.setBookings(userBookings);
             userRepository.save(user);
 
-            List<Booking> appointmentBookings = appointment.getBookings();
-            appointmentBookings.add(savedBooking);
-            appointment.setBookings(appointmentBookings);
+            appointment.setBooked(true); // just mark as booked
             appointmentRepository.save(appointment);
-
-            // Send confirmation email
 
             String subject = "אישור תאום פגישת הדרכה - ניר הדרכת עבודה בגובה";
 
             String body = "היי " + user.getName() + ",\n\n" +
                     "ההזמנה שלך אושרה. הנה הפרטים:\n" +
                     "קוד אישור הזמנה: " + bookingConfirmationCode + "\n" +
-                    "סוג הפגישה: " + appointment.getAppointmentType() + "\n" +
+                    "כתובת אימייל לאישור: " + appointment.getUserEmail() + "\n" +
                     "תאריך הפגישה: " + bookingRequest.getDate() + "\n" +
+                    "מועד: " + appointment.getTimeSlot() + "\n" +
                     "מחכים לראותכם.\n\n" +
                     "ניר הדרכת עבודה בגובה";
 
@@ -95,6 +92,7 @@ public class BookingService implements IBookingService {
         }
         return response;
     }
+
 
     @Override
     public Response findBookingByConfirmationCode(String confirmationCode) {
@@ -151,7 +149,7 @@ public class BookingService implements IBookingService {
 
             Appointment appointment = booking.getAppointment();
             if (appointment != null) {
-                appointment.getBookings().removeIf(b -> b.getId().equals(bookingId));
+                appointment.setBooked(false);
                 appointmentRepository.save(appointment);
             }
 

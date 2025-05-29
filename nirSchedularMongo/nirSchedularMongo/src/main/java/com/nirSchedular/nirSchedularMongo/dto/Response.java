@@ -20,6 +20,7 @@ public class Response {
     private UserDTO user;   // User details
     private AppointmentDTO appointment;   // Appointment details
     private BookingDTO booking;   // Booking details
+    private Object data;   // Generic field to hold any additional response data (e.g., lists, objects, messages)
     private List<UserDTO> userList;   // List of users
     private List<AppointmentDTO> appointmentList;   // List of appointments
     private List<BookingDTO> bookingList;   // List of bookings

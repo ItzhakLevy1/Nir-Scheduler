@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AppointmentRepository extends MongoRepository<Appointment, String> {
@@ -15,7 +16,9 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
     @Query("{ 'bookings' : {$size: 0 }}") // Query to find all available appointments, could have also be written like this : @Query("{ 'isAvailable' : true }")
     List<Appointment> findAllAvailableAppointments(); // Custom method to find all available appointments
 
-    List<Appointment> findByAppointmentTypeLikeAndIdNotIn(String appointmentType, List<String> bookedAppointmentIds); // Custom method to find appointments by type and exclude booked ones
+    List<Appointment> findByTimeSlotAndIdNotIn(String timeSlot, List<String> bookedAppointmentIds); // Custom method to find appointments by type and exclude booked ones
+
+    List<Appointment> findByDateAndIsBookedFalse(LocalDate date);
 }
 
 

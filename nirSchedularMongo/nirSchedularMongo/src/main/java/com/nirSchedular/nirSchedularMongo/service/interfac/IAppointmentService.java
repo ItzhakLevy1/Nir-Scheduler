@@ -3,12 +3,14 @@ package com.nirSchedular.nirSchedularMongo.service.interfac;
 import com.nirSchedular.nirSchedularMongo.dto.Response;
 import com.nirSchedular.nirSchedularMongo.entity.Appointment;
 
+import java.time.LocalDate;
+
 public interface IAppointmentService {
 
     /**
      * Creates a new appointment document in the database.
      * @param appointment The appointment to create.
-     * @return A standardized response with creation result.
+     * @return A standardized response with a creation result.
      */
     Response addNewAppointment(Appointment appointment);
 
@@ -30,6 +32,7 @@ public interface IAppointmentService {
      * @param appointmentId The ID of the appointment to update.
      * @return A response with the update status.
      */
+
     Response updateAppointment(String appointmentId);
 
     /**
@@ -47,4 +50,11 @@ public interface IAppointmentService {
      * @return A response indicating success or failure.
      */
     Response removeBookingFromAppointment(String appointmentId, String bookingId);
+
+    /**
+     * Retrieves available appointments for a given date.
+     * @param date The date to filter available appointments.
+     * @return A response with available appointments.
+     */
+    Response getAvailableAppointmentsByDate(LocalDate date);
 }
