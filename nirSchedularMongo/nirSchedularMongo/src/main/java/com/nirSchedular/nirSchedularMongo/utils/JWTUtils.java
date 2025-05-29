@@ -17,11 +17,10 @@ import java.util.function.Function;
 @Service    // This annotation indicates that this class is a service component in the Spring context
 public class JWTUtils {     // This class is responsible for generating and validating JWT tokens
 
+    private static final long EXPIRATION_TIME = 1000 * 60 * 24 * 7; //expires in 7 days
+
     @Value("${jwt.secret}") // This annotation is used to inject the secret key from application properties
     private String secretString;
-
-    @Value("${jwt.expiration}") // This annotation is used to inject the expiration time from application properties
-    private long expirationTime;
 
     private SecretKey key;
 
@@ -35,7 +34,7 @@ public class JWTUtils {     // This class is responsible for generating and vali
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(this.key)
                 .compact(); // Compact the JWT into a string
     }
