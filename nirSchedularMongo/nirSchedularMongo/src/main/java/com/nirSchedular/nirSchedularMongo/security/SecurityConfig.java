@@ -36,7 +36,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)                                      // Disables Cross-Site Request Forgery (CSRF) protection. Using JWT for authentication (which is stateless) means CSRF protection is usually not needed
                 .cors(Customizer.withDefaults())                                            // Enables Cross-Origin Resource Sharing (CORS) with default settings
                 .authorizeHttpRequests(request-> request                                // Configures which endpoints are publicly accessible and which ones require authentication
-                        .requestMatchers("/auth/**", "/rooms/**", "/bookings/**").permitAll()
+                        .requestMatchers("/auth/**", "/appointments/**", "/bookings/**").permitAll()
                         .anyRequest().authenticated())                               // Requires authentication for all other endpoints not specified as publicly accessible
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // Configures how sessions are handled
                 .authenticationProvider(authenticationProvider())                                               // for user authentication

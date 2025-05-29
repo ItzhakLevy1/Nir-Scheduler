@@ -21,7 +21,6 @@ public class AppointmentController {
      * Admins can create a new appointment by sending an Appointment object in the request body
      */
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('ADMIN')") // Only users with ADMIN authority can access
     public ResponseEntity<Response> addNewAppointment(@RequestBody Appointment appointment) {
         Response response = appointmentService.addNewAppointment(appointment);
         return ResponseEntity.status(response.getStatusCode()).body(response);
