@@ -1,11 +1,15 @@
 package com.nirSchedular.nirSchedularMongo.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
+import lombok.Builder;
+import lombok.*;
 
 import java.util.List;
 
 @Data   // Lombok will generate getters, setters, toString, equals, and hashCode methods
+@Builder    // Enables the builder pattern for creating instances of this class
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null fields from JSON serialization
 public class Response {
 
@@ -25,15 +29,11 @@ public class Response {
     private List<AppointmentDTO> appointmentList;   // List of appointments
     private List<BookingDTO> bookingList;   // List of bookings
 
-    // Constructor that accepts message and statusCode
     public Response(String message, int statusCode) {
         this.message = message;
         this.statusCode = statusCode;
     }
 
-    public Response() {
-
-    }
 }
 
 /* This Response DTO is designed to standardize the API responses your backend sends to the frontend or client applications. */

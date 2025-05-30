@@ -10,6 +10,7 @@ import com.nirSchedular.nirSchedularMongo.repo.BookingRepository;
 import com.nirSchedular.nirSchedularMongo.service.interfac.IAppointmentService;
 import com.nirSchedular.nirSchedularMongo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,21 +27,29 @@ public class AppointmentService implements IAppointmentService {
     private BookingRepository bookingRepository; // Handles operations for the Booking entity to retrieve booking-related data
 
     @Override
-    public Response addNewAppointment(Appointment appointment) {
-        Response response = new Response();
-        try {
-            Appointment savedAppointment = appointmentRepository.save(appointment); // Save new appointment
-            AppointmentDTO appointmentDTO = Utils.mapAppointmentEntityToAppointmentDTO(savedAppointment); // Map to DTO
+    public Response addNewAppointment(Appointment newAppointment) {
+        boolean exists = appointmentRepository.existsByDateAndTimeSlotAndIsBookedTrue(
+                newAppointment.getDate(),
+                newAppointment.getTimeSlot()
+        );
 
-            response.setStatusCode(200);
-            response.setMessage("New appointment added successfully");
-            response.setAppointment(appointmentDTO);
-        } catch (Exception e) {
-            response.setStatusCode(500);
-            response.setMessage("Error occurred while saving an appointment: " + e.getMessage());
+        if (exists) {
+            return Response.builder()
+                    .message("An appointment is already booked for this date and time slot.")
+                    .statusCode(HttpStatus.CONFLICT.value())
+                    .build();
         }
-        return response;
+
+        // Save new appointment
+        newAppointment.setBooked(true); // assuming you want to mark it as booked
+        appointmentRepository.save(newAppointment);
+
+        return Response.builder()
+                .message("Appointment added successfully.")
+                .statusCode(HttpStatus.CREATED.value())
+                .build();
     }
+
 
     @Override
     public Response getAllAppointments() {

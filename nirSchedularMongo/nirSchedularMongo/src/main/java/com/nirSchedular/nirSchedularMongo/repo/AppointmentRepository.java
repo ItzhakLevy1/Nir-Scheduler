@@ -19,6 +19,8 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
     List<Appointment> findByTimeSlotAndIdNotIn(String timeSlot, List<String> bookedAppointmentIds); // Custom method to find appointments by type and exclude booked ones
 
     List<Appointment> findByDateAndIsBookedFalse(LocalDate date);
+
+    boolean existsByDateAndTimeSlotAndIsBookedTrue(LocalDate date, String timeSlot);
 }
 
 
