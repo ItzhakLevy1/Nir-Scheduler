@@ -67,13 +67,13 @@ public class AppointmentController {
      * Admin can update appointment details (in this simplified model, maybe date/time rescheduling)
      */
     @PutMapping("/update/{appointmentId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> updateAppointment(
-            @PathVariable String appointmentId
-    ) {
-        Response response = appointmentService.updateAppointment(appointmentId);
+            @PathVariable String appointmentId,
+            @RequestBody Appointment updatedAppointment) {
+        Response response = appointmentService.updateAppointment(appointmentId, updatedAppointment);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
+
 
     /**
      * Admin can delete an appointment

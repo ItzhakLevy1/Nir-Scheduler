@@ -28,7 +28,7 @@ public class AppointmentService implements IAppointmentService {
 
     @Override
     public Response addNewAppointment(Appointment newAppointment) {
-        boolean exists = appointmentRepository.existsByDateAndTimeSlotAndIsBookedTrue(
+        boolean exists = appointmentRepository.existsByDateAndTimeSlotAndBookedTrue(
                 newAppointment.getDate(),
                 newAppointment.getTimeSlot()
         );
@@ -90,17 +90,24 @@ public class AppointmentService implements IAppointmentService {
     }
 
     @Override
-    public Response updateAppointment(String appointmentId) {
+    public Response updateAppointment(String appointmentId, Appointment updatedAppointment) {
         Response response = new Response();
         try {
             Appointment appointment = appointmentRepository.findById(appointmentId)
-                    .orElseThrow(() -> new OurException("Appointment Not Found")); // Find appointment
-            Appointment updatedAppointment = appointmentRepository.save(appointment); // Update appointment
-            AppointmentDTO appointmentDTO = Utils.mapAppointmentEntityToAppointmentDTO(updatedAppointment); // Map updated DTO
+                    .orElseThrow(() -> new OurException("Appointment Not Found"));
+
+            // Update all fields you allow to change
+            appointment.setDate(updatedAppointment.getDate());
+            appointment.setTimeSlot(updatedAppointment.getTimeSlot());
+            appointment.setBooked(updatedAppointment.isBooked());
+
+            // Save the updated appointment
+            Appointment updated = appointmentRepository.save(appointment);
+            AppointmentDTO dto = Utils.mapAppointmentEntityToAppointmentDTO(updated);
 
             response.setStatusCode(200);
             response.setMessage("Appointment was updated successfully");
-            response.setAppointment(appointmentDTO);
+            response.setAppointment(dto);
         } catch (OurException e) {
             response.setStatusCode(404);
             response.setMessage(e.getMessage());
@@ -110,6 +117,8 @@ public class AppointmentService implements IAppointmentService {
         }
         return response;
     }
+
+
 
     @Override
     public Response deleteAppointment(String appointmentId) {
@@ -166,7 +175,7 @@ public class AppointmentService implements IAppointmentService {
 
         try {
             // Fetch appointments for the given date that are not booked
-            List<Appointment> availableAppointments = appointmentRepository.findByDateAndIsBookedFalse(date);
+            List<Appointment> availableAppointments = appointmentRepository.findByDateAndBookedFalse(date);
 
             response.setStatusCode(200);
             response.setMessage("Available appointments retrieved successfully");

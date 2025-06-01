@@ -33,7 +33,7 @@ public interface IAppointmentService {
      * @return A response with the update status.
      */
 
-    Response updateAppointment(String appointmentId);
+    public Response updateAppointment(String appointmentId, Appointment updatedData);
 
     /**
      * Deletes an appointment from the database.
