@@ -1,36 +1,26 @@
 package com.nirSchedular.nirSchedularMongo.entity;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Data   // Lombok will generate getters, setters, toString, equals, and hashCode methods
-@Document(collection = "bookings") // This class maps to the 'bookings' collection in MongoDB
+/**
+ * Represents a booking for an appointment by a user.
+ */
+@Document(collection = "bookings") // This marks the class as a MongoDB document stored in the "bookings" collection
+@Data // Lombok: generates getters, setters, equals, hashCode, toString
+@NoArgsConstructor // Lombok: generates a no-args constructor
+@AllArgsConstructor // Lombok: generates a constructor with all fields
+@Builder // Lombok: enables the builder pattern for creating instances
 public class Booking {
 
-    @Id // Marks this field as the primary identifier for the MongoDB document
-    private String id;   // Unique identifier for the booking, which MongoDB will generate automatically
+    @Id
+    private String id; // MongoDB document ID, maps to _id field in the database
 
-    private String bookingConfirmationCode;   // A unique confirmation code for each booking
-
-    @DBRef
-    private User user;   // The user associated with this booking
-
-    @DBRef
-    private Appointment appointment;   // The appointment associated with this booking
-
-    private LocalDate date;   // The date of the booking
-
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "id='" + id + '\'' +
-                ", bookingConfirmationCode='" + bookingConfirmationCode + '\'' +
-                ", user=" + user +
-                ", appointment=" + appointment +
-                '}';
-    }
+    private Appointment appointment; // The appointment that was booked
+    private User user; // The user who made the booking
+    private String bookingConfirmationCode; // A unique code used to confirm and identify the booking
+    private LocalDate date; // The date of the booking (usually matches appointment date)
 }

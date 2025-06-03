@@ -4,10 +4,14 @@ import com.nirSchedular.nirSchedularMongo.dto.AppointmentDTO;
 import com.nirSchedular.nirSchedularMongo.dto.Response;
 import com.nirSchedular.nirSchedularMongo.entity.Appointment;
 import com.nirSchedular.nirSchedularMongo.entity.Booking;
+import com.nirSchedular.nirSchedularMongo.entity.User;
 import com.nirSchedular.nirSchedularMongo.exception.OurException;
 import com.nirSchedular.nirSchedularMongo.repo.AppointmentRepository;
 import com.nirSchedular.nirSchedularMongo.repo.BookingRepository;
+import com.nirSchedular.nirSchedularMongo.repo.UserRepository;
 import com.nirSchedular.nirSchedularMongo.service.interfac.IAppointmentService;
+import com.nirSchedular.nirSchedularMongo.service.interfac.IEmailService;
+import com.nirSchedular.nirSchedularMongo.utils.Enums;
 import com.nirSchedular.nirSchedularMongo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +30,25 @@ public class AppointmentService implements IAppointmentService {
     @Autowired
     private BookingRepository bookingRepository; // Handles operations for the Booking entity to retrieve booking-related data
 
+    @Autowired
+    private IEmailService emailService; // Handles sending emails, such as appointment confirmations
+
+    @Autowired
+    private UserRepository userRepository;  // Handles operations for the User entity to retrieve user-related data
+
     @Override
-    public Response addNewAppointment(Appointment newAppointment) {
+    public Response addNewAppointment(Appointment appointment) {
+        User user = userRepository.findByEmail(appointment.getUserEmail())  // Fetch user by email
+                .orElseThrow(() -> new OurException("User Not Found"));     // If user not found, throw an exception
+
+        // 1. Validate required fields
+        if (appointment.getUserEmail() == null || appointment.getDate() == null || appointment.getTimeSlot() == null) {
+            throw new OurException("Missing required appointment details.");
+        }
+
+        // 2. Check if slot is already booked for the given date and time slot
         boolean exists = appointmentRepository.existsByDateAndTimeSlotAndBookedTrue(
-                newAppointment.getDate(),
-                newAppointment.getTimeSlot()
-        );
+                appointment.getDate(), appointment.getTimeSlot());
 
         if (exists) {
             return Response.builder()
@@ -40,16 +57,60 @@ public class AppointmentService implements IAppointmentService {
                     .build();
         }
 
-        // Save new appointment
-        newAppointment.setBooked(true); // assuming you want to mark it as booked
-        appointmentRepository.save(newAppointment);
+        // 3. Generate confirmation code and set booked=true
+        String code = Utils.generateRandomConfirmationCode(8); // e.g., 8-character code
+        appointment.setConfirmationCode(code);
+        appointment.setBooked(true);
 
+        // 4. Save appointment
+        Appointment saved = appointmentRepository.save(appointment);
+
+        // 5. Build HTML email content, uses to make sure test will be appended to the right since its in Hebrew
+        String htmlContent = """
+            <div dir="rtl" style="text-align: right; font-family: Arial, sans-serif;">
+                <p>היי %s,</p>
+                <p>ההזמנה שלך אושרה. הנה הפרטים:</p>
+                <ul>
+                    <li>קוד אישור הזמנה: %s</li>
+                    <li>תאריך הפגישה: %s</li>
+                    <li>הדרכת: %s</li>
+                    <li>צור קשר:
+                        <a href="tel:0526126120">052-612-612-0 </a>
+                        </a>
+                    </li>
+                    <li>
+                         נווט לכתובת: <a href="https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17"
+                                 style="color: #1a73e8; text-decoration: none;"
+                                 target="_blank">
+                                 אליהו איתן 3, בית גירון - אולם 107, ראשל"צ 
+                        </a>
+                    </li>
+                </ul>
+                <p>מחכים לראותכם.</p>
+                <p>Gova - הדרכת עבודה בגובה</p>
+            </div>
+            """.formatted(
+                user.getName(),
+                code,
+                appointment.getDate(),
+                Enums.TimeSlot.valueOf(appointment.getTimeSlot()).getHebrewLabel()
+        );
+
+
+        // 6. Send email
+        emailService.sendEmail(
+                appointment.getUserEmail(),
+                "אישור הזמנה - Gova הדרכת עבודה בגובה",
+                htmlContent
+        );
+
+        // 7. Return response with saved appointment
         return Response.builder()
-                .message("Appointment added successfully.")
                 .statusCode(HttpStatus.CREATED.value())
+                .message("Appointment added successfully.")
+                .data(saved)
                 .build();
     }
-
 
     @Override
     public Response getAllAppointments() {

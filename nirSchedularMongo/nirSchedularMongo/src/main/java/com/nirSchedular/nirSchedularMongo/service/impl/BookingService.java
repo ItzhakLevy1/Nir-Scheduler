@@ -16,6 +16,7 @@ import com.nirSchedular.nirSchedularMongo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,48 +40,46 @@ public class BookingService implements IBookingService {
         this.emailService = emailService;
     }
 
+    @Transactional
     @Override
     public Response saveBooking(String appointmentId, String userId, Booking bookingRequest) {
-        Response response = new Response(); // Initializes the response object
+        Response response = new Response();
 
         try {
+            // 1. Fetch the appointment by ID
             Appointment appointment = appointmentRepository.findById(appointmentId)
                     .orElseThrow(() -> new OurException("Appointment not found"));
 
+            // 2. Check if already booked
+            validateAppointmentNotBooked(appointment);
+
+            // 3. Fetch user by ID
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new OurException("User not found"));
 
-            String bookingConfirmationCode = Utils.generateRandomConfirmationCode(10);
+            // 4. Generate a unique booking confirmation code
+            String bookingConfirmationCode = generateUniqueConfirmationCode();
 
+            // 5. Set associations and metadata
             bookingRequest.setAppointment(appointment);
             bookingRequest.setUser(user);
             bookingRequest.setBookingConfirmationCode(bookingConfirmationCode);
 
+            // 6. Save booking in DB
             Booking savedBooking = bookingRepository.save(bookingRequest);
 
-            List<Booking> userBookings = user.getBookings() != null ? user.getBookings() : new ArrayList<>();
-            userBookings.add(savedBooking);
-            user.setBookings(userBookings);
-            userRepository.save(user);
+            // 7. Link booking to user and persist
+            linkBookingToUser(user, savedBooking);
 
-            appointment.setBooked(true); // just mark as booked
-            appointmentRepository.save(appointment);
+            // 8. Mark appointment as booked
+            markAppointmentAsBooked(appointment);
 
-            String subject = "אישור תאום פגישת הדרכה - ניר הדרכת עבודה בגובה";
+            // 9. Send email confirmation
+            sendBookingConfirmationEmail(user, appointment, bookingRequest, bookingConfirmationCode);
 
-            String body = "היי " + user.getName() + ",\n\n" +
-                    "ההזמנה שלך אושרה. הנה הפרטים:\n" +
-                    "קוד אישור הזמנה: " + bookingConfirmationCode + "\n" +
-                    "כתובת אימייל לאישור: " + appointment.getUserEmail() + "\n" +
-                    "תאריך הפגישה: " + bookingRequest.getDate() + "\n" +
-                    "מועד: " + appointment.getTimeSlot() + "\n" +
-                    "מחכים לראותכם.\n\n" +
-                    "ניר הדרכת עבודה בגובה";
-
-            emailService.sendEmail(user.getEmail(), subject, body);
-
+            // 10. Prepare response
             response.setStatusCode(200);
-            response.setMessage("successful");
+            response.setMessage("Booking successful");
             response.setBookingConfirmationCode(bookingConfirmationCode);
 
         } catch (OurException e) {
@@ -88,10 +87,53 @@ public class BookingService implements IBookingService {
             response.setMessage(e.getMessage());
         } catch (Exception e) {
             response.setStatusCode(500);
-            response.setMessage("Error saving a booking " + e.getMessage());
+            response.setMessage("Error saving a booking: " + e.getMessage());
         }
+
         return response;
     }
+
+
+    private void validateAppointmentNotBooked(Appointment appointment) {
+        if (appointment.isBooked()) {
+            throw new OurException("Appointment is already booked");
+        }
+    }
+
+    private String generateUniqueConfirmationCode() {
+        String code;
+        do {
+            code = Utils.generateRandomConfirmationCode(10);
+        } while (bookingRepository.findByBookingConfirmationCode(code).isPresent());
+        return code;
+    }
+
+    private void linkBookingToUser(User user, Booking booking) {
+        List<Booking> bookings = user.getBookings() != null ? user.getBookings() : new ArrayList<>();
+        bookings.add(booking);
+        user.setBookings(bookings);
+        userRepository.save(user);
+    }
+
+    private void markAppointmentAsBooked(Appointment appointment) {
+        appointment.setBooked(true);
+        appointmentRepository.save(appointment);
+    }
+
+    private void sendBookingConfirmationEmail(User user, Appointment appointment, Booking booking, String code) {
+        String subject = "אישור תאום פגישת הדרכה - ניר הדרכת עבודה בגובה";
+        String body = "היי " + user.getName() + ",\n\n" +
+                "ההזמנה שלך אושרה. הנה הפרטים:\n" +
+                "קוד אישור הזמנה: " + code + "\n" +
+                "כתובת אימייל לאישור: " + appointment.getUserEmail() + "\n" +
+                "תאריך הפגישה: " + booking.getDate() + "\n" +
+                "מועד: " + appointment.getTimeSlot() + "\n" +
+                "מחכים לראותכם.\n\n" +
+                "ניר הדרכת עבודה בגובה";
+
+        emailService.sendEmail(user.getEmail(), subject, body);
+    }
+
 
 
     @Override
