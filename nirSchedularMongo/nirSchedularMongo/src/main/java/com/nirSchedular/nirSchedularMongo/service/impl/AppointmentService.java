@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // @Service Marks this class as a service component in the Spring Framework, meaning it's a service that can be injected into other components.
 @Service
@@ -128,6 +129,34 @@ public class AppointmentService implements IAppointmentService {
         }
         return response;
     }
+
+    @Override
+    public Response getAllAvailableAppointments() {
+        Response response = new Response();
+
+        try {
+            // 1. Fetch all appointments from the database
+            List<Appointment> allAppointments = appointmentRepository.findAll();
+
+            // 2. Filter appointments that are not yet booked
+            List<Appointment> availableAppointments = allAppointments.stream()  // Stream through all appointments
+                    .filter(Appointment::isAvailable) // Filter appointments that are available (not booked)
+                    .collect(Collectors.toList());  // Collect the filtered appointments into a list
+
+            // 3. Set the filtered list as the data in the response
+            response.setStatusCode(200);
+            response.setMessage("Available appointments retrieved successfully.");
+            response.setData(availableAppointments);
+        } catch (Exception e) {
+            // 4. Handle unexpected errors
+            response.setStatusCode(500);
+            response.setMessage("An error occurred while retrieving available appointments: " + e.getMessage());
+            response.setData(null);
+        }
+
+        return response;
+    }
+
 
     @Override
     public Response getAppointmentById(String appointmentId) {

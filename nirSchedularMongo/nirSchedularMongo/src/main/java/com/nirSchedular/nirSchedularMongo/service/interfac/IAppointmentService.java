@@ -21,6 +21,14 @@ public interface IAppointmentService {
     Response getAllAppointments();
 
     /**
+     * Retrieves all available appointments across all dates.
+     * This is useful for booking views or availability calendars.
+     * @return A response containing a list of all available appointments.
+     */
+    Response getAllAvailableAppointments();
+
+
+    /**
      * Retrieves a single appointment by its unique ID.
      * @param appointmentId The MongoDB document ID.
      * @return A response with the found appointment or an error.

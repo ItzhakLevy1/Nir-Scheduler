@@ -24,4 +24,9 @@ public class Appointment {
     private String confirmationCode;    // Unique confirmation code for the appointment booking
     private String notes;   // Any user notes
 
+    // Constructor for creating an appointment with just the date and time slot, Used in getAllAvailableAppointments
+    public boolean isAvailable() {
+        return !this.isBooked();
+    }
+
 }

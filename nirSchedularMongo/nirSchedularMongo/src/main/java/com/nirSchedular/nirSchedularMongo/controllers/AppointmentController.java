@@ -26,13 +26,22 @@ public class AppointmentController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-
     /**
      * Retrieve all appointments (for admin or general use)
      */
     @GetMapping("/all")
     public ResponseEntity<Response> getAllAppointments() {
         Response response = appointmentService.getAllAppointments();
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    /**
+     * Get all available appointments (across all dates).
+     * Useful for booking views or availability calendars.
+     */
+    @GetMapping("/all-available")
+    public ResponseEntity<Response> getAllAvailableAppointments() {
+        Response response = appointmentService.getAllAvailableAppointments();
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
