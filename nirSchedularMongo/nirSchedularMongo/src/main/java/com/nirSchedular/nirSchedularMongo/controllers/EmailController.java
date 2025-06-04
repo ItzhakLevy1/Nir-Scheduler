@@ -17,9 +17,9 @@ public class EmailController {
 
     @PostMapping("/send")
     public String sendEmail(
-            @RequestParam String to,
-            @RequestParam String subject,
-            @RequestParam String body) {
+            @RequestParam String to,        // @RequestParam tells Spring to extract values from the query string of the URL, not from the request body
+            @RequestParam String subject,   // @RequestParam tells Spring to extract values from the query string of the URL, not from the request body
+            @RequestParam String body) {    // @RequestParam tells Spring to extract values from the query string of the URL, not from the request body
         emailService.sendEmail(to, subject, body);
         return "Email sent successfully to " + to;
     }
