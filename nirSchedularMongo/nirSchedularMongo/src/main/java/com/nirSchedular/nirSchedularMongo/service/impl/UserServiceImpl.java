@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service    // This annotation indicates that this class is a service component in the Spring context
-public class UserService implements IUserService {
+public class UserServiceImpl implements IUserService {
 
     @Autowired  // This annotation is used for dependency injection
     private UserRepository userRepository;  // This is the repository interface for User entity

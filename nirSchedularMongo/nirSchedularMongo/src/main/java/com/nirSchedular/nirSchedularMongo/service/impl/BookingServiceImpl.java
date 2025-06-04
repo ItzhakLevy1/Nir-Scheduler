@@ -9,7 +9,6 @@ import com.nirSchedular.nirSchedularMongo.exception.OurException;
 import com.nirSchedular.nirSchedularMongo.repo.AppointmentRepository;
 import com.nirSchedular.nirSchedularMongo.repo.BookingRepository;
 import com.nirSchedular.nirSchedularMongo.repo.UserRepository;
-import com.nirSchedular.nirSchedularMongo.service.interfac.IAppointmentService;
 import com.nirSchedular.nirSchedularMongo.service.interfac.IBookingService;
 import com.nirSchedular.nirSchedularMongo.service.interfac.IEmailService;
 import com.nirSchedular.nirSchedularMongo.utils.Utils;
@@ -22,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class BookingService implements IBookingService {
+public class BookingServiceImpl implements IBookingService {
 
     private final BookingRepository bookingRepository;
     private final AppointmentRepository appointmentRepository;
@@ -30,10 +29,10 @@ public class BookingService implements IBookingService {
     private final IEmailService emailService;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository,
-                          AppointmentRepository appointmentRepository,
-                          UserRepository userRepository,
-                          IEmailService emailService) {
+    public BookingServiceImpl(BookingRepository bookingRepository,
+                              AppointmentRepository appointmentRepository,
+                              UserRepository userRepository,
+                              IEmailService emailService) {
         this.bookingRepository = bookingRepository;
         this.appointmentRepository = appointmentRepository;
         this.userRepository = userRepository;

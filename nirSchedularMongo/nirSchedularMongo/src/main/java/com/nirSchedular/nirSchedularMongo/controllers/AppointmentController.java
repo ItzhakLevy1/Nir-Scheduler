@@ -83,6 +83,16 @@ public class AppointmentController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
+    /**
+     * Retrieve an appointment using its confirmation code.
+     * Useful for users who received a code via email to verify their booking.
+     */
+    @GetMapping("/get-by-confirmation-code/{code}")
+    public ResponseEntity<Response> getAppointmentByConfirmationCode(@PathVariable String code) {
+        Response response = appointmentService.getAppointmentByConfirmationCode(code);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
 
     /**
      * Admin can delete an appointment

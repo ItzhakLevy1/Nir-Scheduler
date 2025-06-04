@@ -65,4 +65,10 @@ public interface IAppointmentService {
      * @return A response with available appointments.
      */
     Response getAvailableAppointmentsByDate(LocalDate date);
+
+    /**
+     * Get appointment details by confirmation code.
+     */
+    Response getAppointmentByConfirmationCode(String confirmationCode);
+
 }

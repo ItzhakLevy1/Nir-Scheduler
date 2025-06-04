@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface AppointmentRepository extends MongoRepository<Appointment, String> {
 
@@ -21,6 +22,12 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
     List<Appointment> findByDateAndBookedFalse(LocalDate date);
 
     boolean existsByDateAndTimeSlotAndBookedTrue(LocalDate date, String timeSlot);
+
+    /**
+     * Find an appointment by its confirmation code (typically used to verify booking).
+     */
+    Optional<Appointment> findByConfirmationCode(String confirmationCode);
+
 }
 
 

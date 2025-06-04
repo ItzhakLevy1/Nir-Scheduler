@@ -19,11 +19,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // @Service Marks this class as a service component in the Spring Framework, meaning it's a service that can be injected into other components.
 @Service
-public class AppointmentService implements IAppointmentService {
+public class AppointmentServiceImpl implements IAppointmentService {
 
     @Autowired
     private AppointmentRepository appointmentRepository; // Handles database operations for Appointment entities (add, update, delete, find)
@@ -278,4 +279,27 @@ public class AppointmentService implements IAppointmentService {
 
         return response;
     }
+
+    @Override
+    public Response getAppointmentByConfirmationCode(String confirmationCode) {
+        Response response = new Response();
+
+        // Look up the appointment using the unique confirmation code
+        Optional<Appointment> optionalAppointment = appointmentRepository.findByConfirmationCode(confirmationCode);
+
+        if (optionalAppointment.isPresent()) {
+            // Appointment found
+            response.setStatusCode(200);
+            response.setMessage("Appointment found.");
+            response.setData(optionalAppointment.get());
+        } else {
+            // No appointment with this code
+            response.setStatusCode(404);
+            response.setMessage("No appointment found for the provided confirmation code.");
+        }
+
+        return response;
+    }
+
+
 }
