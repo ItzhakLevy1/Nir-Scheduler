@@ -40,3 +40,13 @@ src/main/resources/application.properties
 
 # Node dependencies (for frontend later)
 **/node_modules/
+
+# React build output
+/nirSchedularReact/build/
+
+# React environment variables
+/nirSchedularReact/.env
+/nirSchedularReact/.env.local
+/nirSchedularReact/.env.development.local
+/nirSchedularReact/.env.test.local
+/nirSchedularReact/.env.production.local
