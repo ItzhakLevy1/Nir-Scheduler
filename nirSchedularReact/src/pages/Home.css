@@ -1,0 +1,16 @@
+.home {
+  padding: 2rem;
+  text-align: right;
+  direction: rtl;
+}
+
+.home h2 {
+  font-size: 2rem;
+  color: #003366;
+  margin-bottom: 1rem;
+}
+
+.home p {
+  font-size: 1.2rem;
+  color: #333;
+}
