@@ -1,8 +1,9 @@
 import React from 'react';
+import './Footer.css'
 
 const Footer = () => (
-  <footer className="">
-    © {new Date().getFullYear()} Nir Scheduler
+  <footer className="footer">
+    © {new Date().getFullYear()} א.א.גובה
   </footer>
 );
 
