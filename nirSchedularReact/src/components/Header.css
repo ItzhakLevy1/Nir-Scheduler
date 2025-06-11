@@ -85,6 +85,7 @@
   .contact-links {
     display: flex;
     flex-direction: column;
+    margin-right: 0rem;
   }
   .site-title {
     font-size: 2.5rem;

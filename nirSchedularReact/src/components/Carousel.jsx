@@ -23,7 +23,7 @@ export default function Carousel() {
     if (isHovered) return; // If hovered, return early to pause the slideshow
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length); // Move to next image, prev is the previous index value, % images.length ensures the index wraps around to 0 when it reaches the end, so the slideshow loops
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [isHovered]);
 
