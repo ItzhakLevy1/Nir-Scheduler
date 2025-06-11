@@ -20,7 +20,7 @@ const Header = () => {
             href="https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17"
             className="link-button"
           >
-            ⛳ נווט אלינו
+            🚩 נווט אלינו
           </a>
         </section>
 
