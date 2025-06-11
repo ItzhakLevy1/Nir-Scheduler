@@ -7,6 +7,12 @@ const images = [
   "/images/carousel3.jpg",
 ];
 
+const captions = [
+  `סוגי הדרכות:\nיום, ערב\nסולמות, גגות\nמבני קונסטרוקציה, סל הרמה\nחלל מוקף, פיגומים\nבמות הרמה להדרכה`,
+  "שמים את הבטיחות במקום הראשון",
+  "מעוניינים בהדרכת בטיחות בעבודה ? \n אל תהססו, צרו איתנו קשר",
+];
+
 export default function Carousel() {
   const [index, setIndex] = useState(0); // Track the current image index
   const [isHovered, setIsHovered] = useState(false); // Track mouse hover
@@ -28,9 +34,9 @@ export default function Carousel() {
 
   // Determine swipe direction and update the index accordingly
   const handleTouchEnd = (e) => {
-    if (!touchStartX.current) return;   // If touchStartX is not set, do nothing
-    const touchEndX = e.changedTouches[0].clientX;  // Get the final touch position
-    const diff = touchStartX.current - touchEndX;   // Calculate the difference between start and end positions
+    if (!touchStartX.current) return; // If touchStartX is not set, do nothing
+    const touchEndX = e.changedTouches[0].clientX; // Get the final touch position
+    const diff = touchStartX.current - touchEndX; // Calculate the difference between start and end positions
 
     if (diff > 50) setIndex((index + 1) % images.length); // Swipe left (next)
     if (diff < -50) setIndex((index - 1 + images.length) % images.length); // Swipe right (previous)
@@ -52,6 +58,8 @@ export default function Carousel() {
         onTouchStart={handleTouchStart} // Mobile swipe start
         onTouchEnd={handleTouchEnd} // Mobile swipe end
       />
+
+      <div className="carousel-text-overlay">{captions[index]}</div>
 
       {/* Left navigation button */}
       <button
