@@ -115,6 +115,7 @@
   text-align: right;
 }
 
+/* For mobile size screen */
 @media (max-width: 800px) {
   .about-section {
     flex-direction: column;

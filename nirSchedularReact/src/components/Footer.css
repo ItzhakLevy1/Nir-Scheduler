@@ -34,6 +34,7 @@
   padding-top: 12px;
 }
 
+/* For mobile size screen */
 @media (max-width: 700px) {
   .footer-content {
     flex-direction: column;
