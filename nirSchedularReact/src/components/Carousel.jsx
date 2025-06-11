@@ -60,8 +60,9 @@ export default function Carousel() {
   }, []); // The empty dependency array ensures this effect runs only once when the component mounts
 
   // Function to smoothly scroll back to the top of the page
-  const handleScrollTop = () => {
+  const handleScrollTop = (e) => {
     window.scrollTo({ top: 0, behavior: "smooth" }); // Scrolls to the top with a smooth animation
+    e.preventDefault(); // Prevent default background flickering on click
   };
 
   return (
