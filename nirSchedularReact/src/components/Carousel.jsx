@@ -16,6 +16,7 @@ const captions = [
 export default function Carousel() {
   const [index, setIndex] = useState(0); // Track the current image index
   const [isHovered, setIsHovered] = useState(false); // Track mouse hover
+  const [showScroll, setShowScroll] = useState(false);
   const touchStartX = useRef(null); // Ref to store touch start position
 
   // Automatically slide images every 3 seconds, but pause on hover
@@ -42,6 +43,25 @@ export default function Carousel() {
     if (diff < -50) setIndex((index - 1 + images.length) % images.length); // Swipe right (previous)
 
     touchStartX.current = null; // Reset touch reference
+  };
+
+  useEffect(() => {
+    // Function that checks the scroll position
+    const onScroll = () => {
+      // If the page is scrolled more than 100px, set 'showScroll' to true
+      setShowScroll(window.scrollY > 100);
+    };
+
+    // Add an event listener to detect scroll events
+    window.addEventListener("scroll", onScroll);
+
+    // Cleanup: Remove event listener when the component unmounts to prevent memory leaks
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []); // The empty dependency array ensures this effect runs only once when the component mounts
+
+  // Function to smoothly scroll back to the top of the page
+  const handleScrollTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scrolls to the top with a smooth animation
   };
 
   return (
@@ -76,6 +96,16 @@ export default function Carousel() {
       >
         &#8594; {/* Right arrow */}
       </button>
+      {/* Scroll to top button */}
+      {showScroll && (
+        <button
+          className="scroll-to-top-btn"
+          onClick={handleScrollTop}
+          aria-label="Scroll to top"
+        >
+          ⬆
+        </button>
+      )}
     </div>
   );
 }
