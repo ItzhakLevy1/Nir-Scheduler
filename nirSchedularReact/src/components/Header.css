@@ -13,7 +13,6 @@
 }
 
 .contact-link {
-  /* background-color: #ffc107; */
   color: black;
   margin: 10px;
   padding: 10px 15px;
@@ -27,17 +26,19 @@
 }
 
 .contact-link:hover {
-  /* background-color: #ffc107; */
   border: 1px solid #ffc107;
-  /* color: #ffc107; */
   transition: all 0.3s ease-in-out;
+}
+
+.contact-links {
+  margin-right: 6em;
 }
 
 .site-title {
   font-size: 2rem;
   font-weight: 900;
   text-decoration: none;
-  color: #ffc107; /* Use a warm accent color */
+  color: #ffc107;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
   transition: transform 0.3s ease;
 }
