@@ -1,0 +1,35 @@
+
+#logout {
+  color: #666;
+  cursor: pointer;
+}
+
+#logout :hover {
+  color: white;
+  cursor: pointer;
+}
+
+.auth-container {
+  max-width: 400px;
+  padding: 20px;
+  border: 0.5px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  margin: 20px auto 50px auto;
+}
+
+.auth-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #007f86;
+}
+
+.register-link {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.register-link a {
+  color: #007f86;
+  text-decoration: none;
+}

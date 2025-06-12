@@ -12,28 +12,6 @@
   flex-wrap: wrap;
 }
 
-.contact-link {
-  color: black;
-  margin: 10px;
-  padding: 10px 15px;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  border: 1px solid;
-  color: white;
-  font-weight: bolder;
-}
-
-.contact-link:hover {
-  border: 1px solid #ffc107;
-  transition: all 0.3s ease-in-out;
-}
-
-.contact-links {
-  margin-right: 6em;
-}
-
 .site-title {
   font-size: 2rem;
   font-weight: 900;
@@ -45,6 +23,11 @@
 
 .site-title:hover {
   transform: scale(1.05);
+}
+
+.order-training {
+  margin-right: 4em;
+  padding: 2em;
 }
 
 .order-training a {
@@ -73,8 +56,8 @@
 }
 
 .auth-links a {
-  background-color: white;
-  color: #030f27;
+  /* background-color: white; */
+  color: #ffc107;
   padding: 8px 16px;
   border-radius: 6px;
   font-weight: bold;
