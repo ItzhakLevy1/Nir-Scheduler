@@ -80,6 +80,11 @@
   cursor: pointer;
   opacity: 0.85;
   transition: background 0.2s, opacity 0.2s;
+
+  /* Fix button flickering on mobile */
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  touch-action: manipulation;
 }
 
 .scroll-to-top-btn:hover {
