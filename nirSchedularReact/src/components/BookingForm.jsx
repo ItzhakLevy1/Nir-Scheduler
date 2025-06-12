@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import './BookingForm.css';
-import handleSubmit from '../utils/formHandlers';
+import React, { useState } from "react";
+import "./BookingForm.css";
+import handleSubmit from "./utils/formHandlers";
 
 const BookingForm = () => {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    date: '',
-    timeSlot: '',
+    fullName: "",
+    email: "",
+    phone: "",
+    date: "",
+    timeSlot: "",
   });
 
   const handleChange = (e) => {
