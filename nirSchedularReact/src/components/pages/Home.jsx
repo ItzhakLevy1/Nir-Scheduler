@@ -1,6 +1,5 @@
 import "./Home.css";
 import Carousel from "../Carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 function Home() {
   return (

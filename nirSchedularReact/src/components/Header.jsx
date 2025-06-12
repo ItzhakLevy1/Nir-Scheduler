@@ -27,6 +27,11 @@ const Header = () => {
         <nav className="order-training">
           <Link to="/booking">הזמנת הדרכה</Link>
         </nav>
+
+        <nav className="auth-links">
+          <Link to="/login">כניסה</Link>
+          <Link to="/register">הרשמה</Link>
+        </nav>
       </div>
     </header>
   );
