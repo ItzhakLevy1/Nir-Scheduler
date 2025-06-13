@@ -51,7 +51,7 @@ function LoginPage() {
 
   return (
     <div className="auth-container">
-      <h2>Login</h2>
+      <h2>התחברות</h2>
 
       {/* Display error messages, if any */}
       {error && <p className="error-message">{error}</p>}
@@ -59,12 +59,12 @@ function LoginPage() {
       {/* Conditionally render the spinner or the login form */}
       {loading ? (
         <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">טוען...</span>
         </Spinner>
       ) : (
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email: </label>
+            <label>אימייל: </label>
             <input
               type="email" // Input type is email for validation
               value={email} // Binds input value to the email state
@@ -73,7 +73,7 @@ function LoginPage() {
             />
           </div>
           <div className="form-group">
-            <label>Password: </label>
+            <label>סיסמה: </label>
             <input
               type="password" // Input type is password for masking characters
               value={password} // Binds input value to the password state
@@ -81,14 +81,14 @@ function LoginPage() {
               required // Ensures the field is required
             />
           </div>
-          <button type="submit">Login</button>{" "}
+          <button type="submit">התחבר</button>{" "}
           {/* Triggers the handleSubmit function */}
         </form>
       )}
 
       {/* Link to the registration page for users without an account */}
       <p className="register-link">
-        Don't have an account? <a href="/register">Register</a>
+        אין לך חשבון? <a href="/register">להרשמה</a>
       </p>
     </div>
   );

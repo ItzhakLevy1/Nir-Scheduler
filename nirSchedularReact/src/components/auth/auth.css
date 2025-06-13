@@ -1,13 +1,4 @@
-
-#logout {
-  color: #666;
-  cursor: pointer;
-}
-
-#logout :hover {
-  color: white;
-  cursor: pointer;
-}
+/**LOGIN CSS STARTS HERE*/
 
 .auth-container {
   max-width: 400px;
@@ -21,7 +12,7 @@
 .auth-container h2 {
   text-align: center;
   margin-bottom: 20px;
-  color: #007f86;
+  color: #001533;
 }
 
 .register-link {
@@ -30,6 +21,50 @@
 }
 
 .register-link a {
-  color: #007f86;
+  color: #001533;
   text-decoration: none;
 }
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+}
+
+/**LOGIN CSS END HERE*/
+
+/**REGISTRATION PAGE START HERE STYLING*/
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"] {
+  width: 95%;
+  padding: 12px;
+  background-color: #001533;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 800;
+  border-radius: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: rgb(34, 80, 128);
+}
+
+/**REGISTRATION PAGE END HERE*/
