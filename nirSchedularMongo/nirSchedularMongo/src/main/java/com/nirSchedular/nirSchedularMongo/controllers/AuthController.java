@@ -35,7 +35,7 @@ public class AuthController {
             // Return a 400 Bad Request response with an error message
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(new Response("Email is already taken", HttpStatus.BAD_REQUEST.value()));
+                    .body(new Response("האימייל כבר תפוס", HttpStatus.BAD_REQUEST.value()));
         }
 
         // If email is not taken, proceed with registration
