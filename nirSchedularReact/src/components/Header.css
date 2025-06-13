@@ -1,5 +1,8 @@
 .header {
-  background-color: #030f27;
+  background-image: linear-gradient(rgb(174 121 79), rgb(174 121 79 / 0%))
+    /* ,
+    url("../../public/images/wood-texture.jpg") */;
+  background-blend-mode: lighten;
   color: white;
   padding: 1rem;
   direction: rtl;
@@ -12,34 +15,40 @@
   flex-wrap: wrap;
 }
 
-.site-title {
-  font-size: 2rem;
-  font-weight: 900;
-  text-decoration: none;
-  color: #ffc107;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-img {
+  width: 80px;
+  height: auto;
+  /* border-radius: 12px; */
+  margin-top: 1em;
+  box-shadow: 0 0 12px rgb(174 121 79);
   transition: transform 0.3s ease;
 }
 
-.site-title:hover {
-  transform: scale(1.05);
+.logo-img:hover {
+  transform: rotate(2deg) scale(1.05);
 }
 
 .order-training {
-  margin-right: 4em;
+  margin-right: 7em;
   padding: 2em;
 }
 
 .order-training a {
   background-color: #ffc107;
-  color: #030f27;
+  color: #ffffff;
   padding: 10px 20px;
   border-radius: 8px;
   font-weight: bold;
   font-size: 1.8rem;
   text-decoration: none;
   border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgb(174 121 79);
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -56,19 +65,17 @@
 }
 
 .auth-links a {
-  /* background-color: white; */
-  color: #ffc107;
+  color: #ffffff;
   padding: 8px 16px;
   border-radius: 6px;
   font-weight: bold;
   text-decoration: none;
-  border: 2px solid #ffc107;
+  border: 2px solid #ffffff;
   transition: all 0.3s ease;
 }
 
 .auth-links a:hover {
-  background-color: #ffc107;
-  color: #030f27;
+  color: rgb(174 121 79);
 }
 
 /* For mobile size screen */
@@ -76,6 +83,19 @@
   .header-content {
     flex-direction: column;
     align-items: center;
+  }
+
+  .header {
+    background-image: linear-gradient(
+        rgb(174 121 79),
+        rgba(174, 122, 79, 0.468)
+      )
+      /* ,
+    url("../../public/images/wood-texture.jpg") */;
+    background-blend-mode: lighten;
+    color: white;
+    padding: 1rem;
+    direction: rtl;
   }
 
   .contact-links {

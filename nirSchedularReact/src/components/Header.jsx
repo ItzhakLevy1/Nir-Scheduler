@@ -5,9 +5,15 @@ const Header = () => {
   return (
     <header className="header">
       <div className="header-content">
-        <Link to="/" className="site-title">
-          א.א. גובה
-        </Link>
+        <div className="logo-section">
+          <Link to="/">
+            <img
+              src="../images/logo.jpg"
+              alt="A.A. Gova Logo"
+              className="logo-img"
+            />
+          </Link>
+        </div>
 
         <nav className="order-training">
           <Link to="/booking">הזמנת הדרכה</Link>
