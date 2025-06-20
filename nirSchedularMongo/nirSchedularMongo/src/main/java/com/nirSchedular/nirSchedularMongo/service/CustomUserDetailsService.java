@@ -15,12 +15,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override   // This method is used by Spring Security to load user details during authentication
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User Name Not Found")); // Implement the logic to load user details from the database or any other source
+        System.out.println("🔁 CustomUserDetailsService called for: " + username);
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User Name Not Found"));   // Implement the logic to load user details from the database or any other source
     }
 }
 
 
 /*
    Custom implementation of Spring Security's UserDetailsService.
-   Used by Spring Security to fetch user details during authentication.
+   Used by Spring Security to fetch user details from the database during authentication.
  */

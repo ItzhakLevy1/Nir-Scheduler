@@ -39,16 +39,14 @@ public class AppointmentServiceImpl implements IAppointmentService {
     private UserRepository userRepository;  // Handles operations for the User entity to retrieve user-related data
 
     @Override
-    public Response addNewAppointment(Appointment appointment) {
-        User user = userRepository.findByEmail(appointment.getUserEmail())  // Fetch user by email
-                .orElseThrow(() -> new OurException("User Not Found"));     // If user not found, throw an exception
-
-        // 1. Validate required fields
+    public Response bookAppointment(String userId, Appointment appointment) {
         if (appointment.getUserEmail() == null || appointment.getDate() == null || appointment.getTimeSlot() == null) {
             throw new OurException("Missing required appointment details.");
         }
 
-        // 2. Check if slot is already booked for the given date and time slot
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new OurException("User not found with ID: " + userId));
+
         boolean exists = appointmentRepository.existsByDateAndTimeSlotAndBookedTrue(
                 appointment.getDate(), appointment.getTimeSlot());
 
@@ -59,57 +57,49 @@ public class AppointmentServiceImpl implements IAppointmentService {
                     .build();
         }
 
-        // 3. Generate confirmation code and set booked=true
-        String code = Utils.generateRandomConfirmationCode(8); // e.g., 8-character code
+        String code = Utils.generateRandomConfirmationCode(8);
         appointment.setConfirmationCode(code);
         appointment.setBooked(true);
+        appointment.setUserId(userId);
+        appointment.setUserEmail(user.getEmail());
 
-        // 4. Save appointment
         Appointment saved = appointmentRepository.save(appointment);
 
-        // 5. Build HTML email content, uses to make sure test will be appended to the right since its in Hebrew
-        String htmlContent = """
-            <div dir="rtl" style="text-align: right; font-family: Arial, sans-serif;">
-                <p>היי %s,</p>
-                <p>ההזמנה שלך אושרה. הנה הפרטים:</p>
+        String htmlContent = String.format("""
+            <div dir=\"rtl\" style=\"text-align: right; font-family: Arial, sans-serif;\">
+                <p>Hi %s,</p>
+                <p>Your appointment has been confirmed. Here are the details:</p>
                 <ul>
-                    <li>קוד אישור הזמנה: %s</li>
-                    <li>תאריך הפגישה: %s</li>
-                    <li>הדרכת: %s</li>
-                    <li>צור קשר:
-                        <a href="tel:0526126120">052-612-612-0 </a>
-                        </a>
-                    </li>
+                    <li>Confirmation Code: %s</li>
+                    <li>Date: %s</li>
+                    <li>Time Slot: %s</li>
+                    <li>Contact: <a href=\"tel:0526126120\">052-612-612-0</a></li>
                     <li>
-                         נווט לכתובת: <a href="https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17"
-                                 style="color: #1a73e8; text-decoration: none;"
-                                 target="_blank">
-                                 אליהו איתן 3, בית גירון - אולם 107, ראשל"צ 
+                        Navigate: <a href=\"https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17\" 
+                                      style=\"color: #1a73e8; text-decoration: none;\" target=\"_blank\">
+                                      Eliahu Eitan 3, Beit Giron - Room 107, Rishon LeZion
                         </a>
                     </li>
                 </ul>
-                <p>מחכים לראותכם.</p>
-                <p>Gova - הדרכת עבודה בגובה</p>
+                <p>Looking forward to seeing you.</p>
+                <p>Gova - Height Work Training</p>
             </div>
-            """.formatted(
+            """,
                 user.getName(),
                 code,
                 appointment.getDate(),
-                Enums.TimeSlot.valueOf(appointment.getTimeSlot()).getHebrewLabel()
+                Enums.TimeSlot.valueOf(appointment.getTimeSlot().toUpperCase()).getHebrewLabel()
         );
 
-
-        // 6. Send email
         emailService.sendEmail(
                 appointment.getUserEmail(),
-                "אישור הזמנה - Gova הדרכת עבודה בגובה",
+                "Appointment Confirmation - Gova",
                 htmlContent
         );
 
-        // 7. Return response with saved appointment
         return Response.builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Appointment added successfully.")
+                .message("Appointment booked successfully.")
                 .data(saved)
                 .build();
     }

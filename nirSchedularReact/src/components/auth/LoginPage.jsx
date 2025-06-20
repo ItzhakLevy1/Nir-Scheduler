@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // React Router hooks for navigation and location
 import ApiService from "../../service/ApiService"; // API service for server communication
 import Spinner from "react-bootstrap/Spinner"; // Import Spinner from react-bootstrap
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function LoginPage() {
   // State variables to store form inputs and errors
@@ -15,7 +16,7 @@ function LoginPage() {
   const location = useLocation(); // To access the current route's location details
 
   // Determines where to navigate after login (fallback to "/home" if no previous page is specified)
-  const from = location.state?.from?.pathname || "/home";
+  const from = location.state?.from?.pathname || "/";
 
   // Handles form submission for login
   const handleSubmit = async (e) => {
@@ -38,6 +39,32 @@ function LoginPage() {
       if (response.statusCode === 200) {
         localStorage.setItem("token", response.token); // Save the user's JWT token
         localStorage.setItem("role", response.role); // Save the user's role (e.g., admin, user, etc.)
+        console.log("response : ", response);
+
+        // Fetch user profile to get userId
+        try {
+          const profileResponse = await ApiService.getUserProfile();
+          console.log("profileResponse : ", profileResponse);
+          if (
+            profileResponse &&
+            profileResponse.user &&
+            profileResponse.user.id
+          ) {
+            localStorage.setItem("userId", profileResponse.user.id);
+          }
+        } catch (profileError) {
+          console.error(
+            "Failed to fetch user profile for userId:",
+            profileError
+          );
+        }
+        // Log stored values for verification
+        const storedToken = localStorage.getItem("token");
+        const storedRole = localStorage.getItem("role");
+        const storedUserId = localStorage.getItem("userId");
+        console.log("[Login] Stored token:", storedToken);
+        console.log("[Login] Stored role:", storedRole);
+        console.log("[Login] Stored userId:", storedUserId);
         navigate(from, { replace: true }); // Redirect to the page the user came from or fallback to "/home"
       }
     } catch (error) {

@@ -1,13 +1,12 @@
 package com.nirSchedular.nirSchedularMongo.security;
 
-import com.nirSchedular.nirSchedularMongo.service.CustomUserDetailsService;
 import com.nirSchedular.nirSchedularMongo.utils.JWTUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-/*import org.springframework.security.authentication.CachingUserDetailsService;*/
+import org.springframework.security.authentication.CachingUserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,52 +17,66 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-// JWTAuthFilter: This class intercepts incoming HTTP requests to validate JWT tokens and sets up the security context for authenticated users
+/**
+ * JWTAuthFilter: Intercepts all incoming HTTP requests to validate JWT tokens
+ * and sets the security context for authenticated users.
+ */
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter {
 
-
-    // A utility class used for generating and validating JWT tokens
     @Autowired
-    private JWTUtils jwtUtils;
+    private JWTUtils jwtUtils; // Utility class for JWT token generation and validation
 
-    // A custom service that loads user details, caches user details for better performance during the authentication process
     @Autowired
-    /* private CachingUserDetailsService cachingUserDetailsService; */
-    private CustomUserDetailsService customUserDetailsService;
+    private CachingUserDetailsService cachingUserDetailsService; // Caching wrapper for UserDetailsService
 
-    // doFilterInternal: This class will be the first to intercept any request to the back end,
-    // It contains the core logic to extract, validate, and set up authentication using JWT tokens.
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");   // Extracts the Authorization header from the incoming request.
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
         final String userEmail;
 
-        if (authHeader == null || authHeader.isBlank()) {   // Check if the Authorization Header is Present
+        // If there is no Authorization header or it is empty, skip authentication
+        if (authHeader == null || authHeader.isBlank()) {
             filterChain.doFilter(request, response);
             return;
         }
-        jwtToken = authHeader.substring(7); // The token is extracted from the Authorization header, omitting the first 7 characters ("Bearer ")
-        userEmail = jwtUtils.extractUserName(jwtToken); // The JWTUtils class is used to extract the username (email) from the token
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {  // Check if User is Not Authenticated
-            /* UserDetails userDetails = cachingUserDetailsService.loadUserByUsername(userEmail);  // Load User Details by retrieving information about the user from the database */
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+        // Extract the token after the "Bearer " prefix
+        jwtToken = authHeader.substring(7);
+        userEmail = jwtUtils.extractUserName(jwtToken);
 
-            if(jwtUtils.isValidToken(jwtToken, userDetails)){   // Validate the JWT Token
+        // If user email exists and there is no current authentication
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Log the user email for debugging purposes
+            System.out.println("✅ Using CachingUserDetailsService to load user: " + userEmail);
+
+            // Load user details using caching service
+            UserDetails userDetails = cachingUserDetailsService.loadUserByUsername(userEmail);
+
+            // Validate the JWT token
+            if (jwtUtils.isValidToken(jwtToken, userDetails)) {
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
-                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                securityContext.setAuthentication(token);
+
+                // Attach additional details from the request (e.g., remote address)
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                // Set the authenticated user in the security context
+                securityContext.setAuthentication(authToken);
                 SecurityContextHolder.setContext(securityContext);
             }
         }
-        filterChain.doFilter(request, response);    // Continue the Filter Chain
+
+        // Continue processing the request
+        filterChain.doFilter(request, response);
     }
 }
+
 
 
 /*

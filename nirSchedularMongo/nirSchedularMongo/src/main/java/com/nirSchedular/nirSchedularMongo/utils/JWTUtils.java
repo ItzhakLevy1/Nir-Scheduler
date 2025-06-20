@@ -24,9 +24,9 @@ public class JWTUtils {     // This class is responsible for generating and vali
 
     private SecretKey key;
 
-    @PostConstruct  // This annotation indicates that this method should be called after the bean is constructed and all dependencies are injected
-    public void init() {    // This method is called to initialize the secret key
-        byte[] keyBytes = Base64.getDecoder().decode(secretString.getBytes(StandardCharsets.UTF_8));
+    @PostConstruct   // This annotation indicates that this method should be called after the bean is constructed and all dependencies are injected
+    public void init() {   // This method is called to initialize the secret key
+        byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8); // no Base64 decode
         this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 

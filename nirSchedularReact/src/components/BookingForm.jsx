@@ -1,32 +1,37 @@
 import React, { useState } from "react";
 import "./BookingForm.css";
-import handleSubmit from "./utils/formHandlers";
+import handleSubmit from "./utils/formHandlers"; // Function that handles form submission logic
 
-const BookingForm = () => {
+// BookingForm component receives userId as a prop
+const BookingForm = ({ userId }) => {
+  // State to hold form input values
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    date: "",
-    timeSlot: "",
+    fullName: "", // Full name input
+    email: "", // Email input
+    phone: "", // Phone number input
+    date: "", // Appointment date
+    timeSlot: "", // Time slot (morning/evening)
   });
 
+  // Handles changes in input fields and updates formData state
   const handleChange = (e) => {
     setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
+      ...prev, // Preserve existing form data
+      [e.target.name]: e.target.value, // Update the changed field
     }));
   };
 
+  // Handles form submission
   const onSubmit = (e) => {
-    e.preventDefault();
-    handleSubmit(formData);
+    e.preventDefault(); // Prevent default form behavior (page reload)
+    handleSubmit({ ...formData, userId }); // Call external submit handler with form data + user ID
   };
 
   return (
     <form className="booking-form" onSubmit={onSubmit}>
       <h2>טופס הזמנת תור</h2>
 
+      {/* Full Name Field */}
       <label>שם מלא:</label>
       <input
         type="text"
@@ -36,6 +41,7 @@ const BookingForm = () => {
         required
       />
 
+      {/* Email Field */}
       <label>אימייל:</label>
       <input
         type="email"
@@ -45,6 +51,7 @@ const BookingForm = () => {
         required
       />
 
+      {/* Phone Field */}
       <label>טלפון:</label>
       <input
         type="tel"
@@ -54,6 +61,7 @@ const BookingForm = () => {
         required
       />
 
+      {/* Date Field */}
       <label>תאריך:</label>
       <input
         type="date"
@@ -63,6 +71,7 @@ const BookingForm = () => {
         required
       />
 
+      {/* Time Slot Dropdown */}
       <label>משבצת זמן:</label>
       <select
         name="timeSlot"
@@ -75,6 +84,7 @@ const BookingForm = () => {
         <option value="evening">ערב</option>
       </select>
 
+      {/* Submit Button */}
       <button type="submit">שלח</button>
     </form>
   );

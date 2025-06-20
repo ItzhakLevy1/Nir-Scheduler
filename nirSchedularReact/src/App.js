@@ -6,6 +6,19 @@ import Booking from "./components/pages/Booking";
 import Admin from "./components/Admin";
 import RegisterPage from "./components/auth/RegisterPage";
 import LoginPage from "./components/auth/LoginPage";
+import toastr from "toastr";
+import "toastr/build/toastr.min.css";
+
+// Configure toastr settings
+toastr.options = {
+  positionClass: "toast-top-center",
+  preventDuplicates: true,
+  closeButton: true,
+  progressBar: true,
+  timeOut: "5000",
+  extendedTimeOut: "1000",
+  toastClass: "toast toast-error", // Add custom class for error toasts
+};
 
 function App() {
   return (

@@ -5,6 +5,7 @@ import com.nirSchedular.nirSchedularMongo.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,7 +37,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)                                      // Disables Cross-Site Request Forgery (CSRF) protection. Using JWT for authentication (which is stateless) means CSRF protection is usually not needed
                 .cors(Customizer.withDefaults())                                            // Enables Cross-Origin Resource Sharing (CORS) with default settings
                 .authorizeHttpRequests(request-> request                                // Configures which endpoints are publicly accessible and which ones require authentication
-                        .requestMatchers("/auth/**", "/appointments/**", "/bookings/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
                         .anyRequest().authenticated())                               // Requires authentication for all other endpoints not specified as publicly accessible
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // Configures how sessions are handled
                 .authenticationProvider(authenticationProvider())                                               // for user authentication

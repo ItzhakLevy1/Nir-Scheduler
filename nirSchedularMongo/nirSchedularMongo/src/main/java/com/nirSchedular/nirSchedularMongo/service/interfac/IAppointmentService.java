@@ -9,10 +9,13 @@ public interface IAppointmentService {
 
     /**
      * Creates a new appointment document in the database.
-     * @param appointment The appointment to create.
-     * @return A standardized response with a creation result.
+     * This method is typically called when a user confirms their booking.
+     * @param userId The ID of the user making the booking.
+     * @param appointment The appointment details to book.
+     * @return The booked appointment with updated status and confirmation code.
      */
-    Response addNewAppointment(Appointment appointment);
+
+    Response bookAppointment(String userId, Appointment appointment);
 
     /**
      * Retrieves all appointment documents.
