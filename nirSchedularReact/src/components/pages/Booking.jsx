@@ -17,13 +17,8 @@ const Booking = () => {
     setUserId(storedUserId);
 
     // Log userId to the console for debugging
-    console.log("🧑‍💼 userId from localStorage:", storedUserId);
+    console.log("UserId from localStorage:", storedUserId);
   }, [appointmentId]); // Dependency array ensures this effect runs when appointmentId changes
-
-  // Show a loading message until userId is available
-  if (!userId) {
-    return <div>נטענים פרטי משתמש או פרטי הפגישה...</div>;
-  }
 
   // Once userId is available, render the BookingForm component with userId and appointmentId as props
   return (

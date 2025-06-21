@@ -41,7 +41,7 @@ function LoginPage() {
         localStorage.setItem("role", response.role); // Save the user's role (e.g., admin, user, etc.)
         console.log("response : ", response);
 
-        // Fetch user profile to get userId
+        // Fetch user profile to get userId and name
         try {
           const profileResponse = await ApiService.getUserProfile();
           console.log("profileResponse : ", profileResponse);
@@ -51,6 +51,11 @@ function LoginPage() {
             profileResponse.user.id
           ) {
             localStorage.setItem("userId", profileResponse.user.id);
+            // Store user name for header display
+            localStorage.setItem(
+              "userProfile",
+              JSON.stringify({ name: profileResponse.user.name })
+            );
           }
         } catch (profileError) {
           console.error(
@@ -65,6 +70,7 @@ function LoginPage() {
         console.log("[Login] Stored token:", storedToken);
         console.log("[Login] Stored role:", storedRole);
         console.log("[Login] Stored userId:", storedUserId);
+        window.dispatchEvent(new Event("nir-auth-change")); // A custom event to notify other components of login/logout actions (auth change) 
         navigate(from, { replace: true }); // Redirect to the page the user came from or fallback to "/home"
       }
     } catch (error) {
