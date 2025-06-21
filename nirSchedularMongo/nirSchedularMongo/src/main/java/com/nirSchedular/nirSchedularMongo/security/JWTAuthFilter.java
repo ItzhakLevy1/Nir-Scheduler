@@ -21,59 +21,64 @@ import java.io.IOException;
  * JWTAuthFilter: Intercepts all incoming HTTP requests to validate JWT tokens
  * and sets the security context for authenticated users.
  */
-@Component
-public class JWTAuthFilter extends OncePerRequestFilter {
+@Component  // This annotation registers the filter as a Spring component, allowing it to be automatically detected and used in the security configuration.
+public class JWTAuthFilter extends OncePerRequestFilter {   // This filter ensures that the JWT token is processed once per request.
 
-    @Autowired
-    private JWTUtils jwtUtils; // Utility class for JWT token generation and validation
+    @Autowired  // Inject the JWTUtils utility class to handle JWT operations
+    private JWTUtils jwtUtils;  // Utility class for JWT operations (validation, extraction, etc.)
 
-    @Autowired
-    private CachingUserDetailsService cachingUserDetailsService; // Caching wrapper for UserDetailsService
+    @Autowired  // Inject the CachingUserDetailsService to load user details from the database
+    private CachingUserDetailsService cachingUserDetailsService;    // Service to load user details from the database with caching
+
+    // Skip this filter for login and registration endpoints
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();     // Get the request path to determine if it should be filtered
+        return path.startsWith("/auth");    // Skips /auth/login, /auth/register, etc.
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)  // This method is called for every request that passes through this filter
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwtToken;
-        final String userEmail;
+        System.out.println("🔎 JWT Filter triggered for: " + request.getRequestURI());
 
-        // If there is no Authorization header or it is empty, skip authentication
-        if (authHeader == null || authHeader.isBlank()) {
-            filterChain.doFilter(request, response);
+        final String authHeader = request.getHeader("Authorization");   // Extract the Authorization header from the request
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {  // Check if the header is present and starts with "Bearer "
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // Set response status to 401 Unauthorized
+            response.getWriter().write("Missing or invalid Authorization header");  // Write error message to response
             return;
         }
 
-        // Extract the token after the "Bearer " prefix
-        jwtToken = authHeader.substring(7);
-        userEmail = jwtUtils.extractUserName(jwtToken);
+        final String jwtToken = authHeader.substring(7);    // Extract the JWT token by removing the "Bearer " prefix
+        final String userEmail = jwtUtils.extractUserName(jwtToken);    // Extract the username (email) from the JWT token
 
-        // If user email exists and there is no current authentication
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Log the user email for debugging purposes
-            System.out.println("✅ Using CachingUserDetailsService to load user: " + userEmail);
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {  // Check if the user is authenticated
+            try {
+                UserDetails userDetails = cachingUserDetailsService.loadUserByUsername(userEmail);  // Load user details from the database using the email extracted from the token
 
-            // Load user details using caching service
-            UserDetails userDetails = cachingUserDetailsService.loadUserByUsername(userEmail);
-
-            // Validate the JWT token
-            if (jwtUtils.isValidToken(jwtToken, userDetails)) {
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-
-                // Attach additional details from the request (e.g., remote address)
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Set the authenticated user in the security context
-                securityContext.setAuthentication(authToken);
-                SecurityContextHolder.setContext(securityContext);
+                if (jwtUtils.isValidToken(jwtToken, userDetails)) { // Validate the JWT token against the user details
+                    SecurityContext context = SecurityContextHolder.createEmptyContext();   // Create a new SecurityContext to hold the authentication information
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(    // Create an authentication token with user details and authorities
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));   // Set additional details for the authentication token
+                    context.setAuthentication(authToken);
+                    SecurityContextHolder.setContext(context);
+                } else {    // If the token is invalid or expired
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // Set response status to 401 Unauthorized
+                    response.getWriter().write("Invalid or expired token");
+                    return;
+                }
+            } catch (Exception e) { // Handle any exceptions that occur during user details loading or token validation
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // Set response status to 401 Unauthorized
+                response.getWriter().write("User authentication failed");
+                return;
             }
         }
 
-        // Continue processing the request
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request, response);    // Continue the filter chain to the next filter or endpoint
     }
 }
 

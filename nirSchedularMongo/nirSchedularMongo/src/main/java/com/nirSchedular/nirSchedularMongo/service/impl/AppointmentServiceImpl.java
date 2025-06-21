@@ -39,28 +39,28 @@ public class AppointmentServiceImpl implements IAppointmentService {
     private UserRepository userRepository;  // Handles operations for the User entity to retrieve user-related data
 
     @Override
-    public Response bookAppointment(String userId, Appointment appointment) {
-        if (appointment.getUserEmail() == null || appointment.getDate() == null || appointment.getTimeSlot() == null) {
+    public Response bookAppointmentByEmail(String userEmail, Appointment appointment) {
+        if (appointment.getDate() == null || appointment.getTimeSlot() == null) {
             throw new OurException("Missing required appointment details.");
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new OurException("User not found with ID: " + userId));
+        User user = userRepository.findByEmail(userEmail)   // Find user by email, which is securely retrieved from the JWT token
+                .orElseThrow(() -> new OurException("User not found"));
 
-        boolean exists = appointmentRepository.existsByDateAndTimeSlotAndBookedTrue(
+        boolean exists = appointmentRepository.existsByDateAndTimeSlotAndBookedTrue(    // Check if an appointment already exists for the given date and time slot
                 appointment.getDate(), appointment.getTimeSlot());
 
-        if (exists) {
+        if (exists) {   // If an appointment is already booked for this date and time slot, return a conflict response
             return Response.builder()
                     .message("An appointment is already booked for this date and time slot.")
                     .statusCode(HttpStatus.CONFLICT.value())
                     .build();
         }
 
-        String code = Utils.generateRandomConfirmationCode(8);
-        appointment.setConfirmationCode(code);
-        appointment.setBooked(true);
-        appointment.setUserId(userId);
+        String code = Utils.generateRandomConfirmationCode(8);   // Generate a unique confirmation code for the appointment
+        appointment.setConfirmationCode(code);                         // Set the confirmation code in the appointment entity
+        appointment.setBooked(true);                                   // Mark the appointment as booked
+        appointment.setUserId(user.getId());                           // Set the user ID of the appointment to the authenticated user's ID
         appointment.setUserEmail(user.getEmail());
 
         Appointment saved = appointmentRepository.save(appointment);

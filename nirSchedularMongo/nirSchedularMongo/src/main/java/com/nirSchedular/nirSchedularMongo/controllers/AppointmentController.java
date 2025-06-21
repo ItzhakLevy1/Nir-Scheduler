@@ -21,19 +21,24 @@ public class AppointmentController {
 
     /**
      * Book an appointment for a user.
-     * This endpoint is accessible to both ADMIN and USER roles.
-     * The userId is passed as a path variable, and the appointment details are in the request body.
+     * This endpoint is secured and requires the user to be authenticated.
+     * The user's email is retrieved from the security context.
+     *
+     * @param userId The ID of the user booking the appointment (not used in this method).
+     * @param appointment The appointment details to be booked.
+     * @return A ResponseEntity containing the booking response.
      */
     @PostMapping("/book/{userId}")
-    public ResponseEntity<Response> bookAppointment(
-            @PathVariable String userId,
-            @RequestBody Appointment appointment) {
+    public ResponseEntity<Response> bookAppointment(@PathVariable String userId, @RequestBody Appointment appointment) {
+        // 🔐 Get logged-in user's email from the security context
+        System.out.println("🔒 Controller hit by user: " +
+                SecurityContextHolder.getContext().getAuthentication().getName());
 
-        System.out.println(">>> Booking appointment for userId: " + userId);
-        System.out.println(">>> Authenticated user: " + SecurityContextHolder.getContext().getAuthentication().getName());
+        String authenticatedEmail = SecurityContextHolder.getContext().getAuthentication().getName();   // Retrieve the authenticated user's email from the security context
+        System.out.println(">>> Authenticated user: " + authenticatedEmail);
 
-        Response response = appointmentService.bookAppointment(userId, appointment); // מתאם את סוג ההחזרה
-        return ResponseEntity.status(response.getStatusCode()).body(response); // מחזיר Response עם קוד סטטוס מתאים
+        Response response = appointmentService.bookAppointmentByEmail(authenticatedEmail, appointment); // Call the service to book the appointment using the authenticated user's email
+        return ResponseEntity.status(response.getStatusCode()).body(response);  // Return the response with the appropriate HTTP status code
     }
 
 

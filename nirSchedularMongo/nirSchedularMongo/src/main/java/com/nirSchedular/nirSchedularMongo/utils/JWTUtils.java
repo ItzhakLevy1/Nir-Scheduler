@@ -10,11 +10,10 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-@Service    // This annotation indicates that this class is a service component in the Spring context
+@Service                     // This annotation indicates that this class is a service component in the Spring context
 public class JWTUtils {     // This class is responsible for generating and validating JWT tokens
 
     private static final long EXPIRATION_TIME = 1000 * 60 * 24 * 7; //expires in 7 days
@@ -24,19 +23,22 @@ public class JWTUtils {     // This class is responsible for generating and vali
 
     private SecretKey key;
 
-    @PostConstruct   // This annotation indicates that this method should be called after the bean is constructed and all dependencies are injected
+    @PostConstruct          // This annotation indicates that this method should be called after the bean is constructed and all dependencies are injected
     public void init() {   // This method is called to initialize the secret key
         byte[] keyBytes = secretString.getBytes(StandardCharsets.UTF_8); // no Base64 decode
-        this.key = new SecretKeySpec(keyBytes, "HmacSHA256");
+        this.key = new SecretKeySpec(keyBytes, "HmacSHA256");   // Create a SecretKey from the byte array using HmacSHA256 algorithm
     }
 
-    public String generateToken(UserDetails userDetails){   // This method generates a JWT token for the given user details
-        return Jwts.builder()
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(this.key)
-                .compact(); // Compact the JWT into a string
+    public String generateToken(UserDetails userDetails) {
+        return Jwts.builder()                       // This method generates a JWT token for the given user details
+                .subject(userDetails.getUsername()) // Set the subject of the token to the username
+                .claim("roles", userDetails.getAuthorities().stream()   // Add user roles as a claim in the token
+                        .map(auth -> auth.getAuthority())   // Map each authority to its string representation
+                        .toList())            // Convert the stream to a list of roles
+                .issuedAt(new Date(System.currentTimeMillis())) // Set the issued date of the token to the current time
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // Set the expiration date of the token to 7 days from now
+                .signWith(this.key) // Sign the token with the secret key
+                .compact(); // Compact the token into a string representation
     }
 
     public String extractUserName(String token){    // This method extracts the username from the JWT token

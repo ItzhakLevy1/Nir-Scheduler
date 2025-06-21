@@ -1,6 +1,5 @@
 package com.nirSchedular.nirSchedularMongo.security;
 
-
 import com.nirSchedular.nirSchedularMongo.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,49 +20,58 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+/**
+ * This class defines the security configuration for the application,
+ * including endpoint access rules, authentication mechanisms, and session policy.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;                              // A service that loads user-specific data during authentication. Injected using @Autowired
+    private CustomUserDetailsService customUserDetailsService;  // A service that loads user-specific data during authentication
+
     @Autowired
-    private JWTAuthFilter jwtAuthFilter;                                                    // A custom JWT authentication filter that validates JWT tokens on every request
+    private JWTAuthFilter jwtAuthFilter;  // A custom JWT authentication filter that validates JWT tokens on every request
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{ // This method configures the main security settings for HTTP requests
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)                                      // Disables Cross-Site Request Forgery (CSRF) protection. Using JWT for authentication (which is stateless) means CSRF protection is usually not needed
-                .cors(Customizer.withDefaults())                                            // Enables Cross-Origin Resource Sharing (CORS) with default settings
-                .authorizeHttpRequests(request-> request                                // Configures which endpoints are publicly accessible and which ones require authentication
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated())                               // Requires authentication for all other endpoints not specified as publicly accessible
-                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))   // Configures how sessions are handled
-                .authenticationProvider(authenticationProvider())                                               // for user authentication
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);                           // Registers the jwtAuthFilter to process requests
-        return httpSecurity.build();                                                                                 // Builds and returns the SecurityFilterChain based on the configured settings.
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)  // CSRF is disabled because JWT is stateless and not vulnerable to CSRF in typical REST APIs
+                .cors(Customizer.withDefaults())        // Enables CORS with default settings
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth/**").permitAll()  // Allow public access to authentication endpoints (login, register, etc.)
+                        .requestMatchers(HttpMethod.GET, "/public/**").permitAll() // Optional: allow public GET endpoints
+                        .requestMatchers("/appointments/**").authenticated()  // 🔐 Secure all appointment endpoints
+                        .anyRequest().authenticated()  // Require authentication for any other endpoint
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // Stateless session (no HTTP session saved on server)
+                .authenticationProvider(authenticationProvider())  // Set up the DAO-based authentication provider
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter before Spring's default auth filter
 
+        return httpSecurity.build();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);  // Retrieves user details for authentication
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());    // Specifies the password encoder to be used
-        return daoAuthenticationProvider;
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider daoAuthProvider = new DaoAuthenticationProvider();
+        daoAuthProvider.setUserDetailsService(customUserDetailsService);  // Inject your custom user loading logic
+        daoAuthProvider.setPasswordEncoder(passwordEncoder());  // Set password encoder
+        return daoAuthProvider;
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(); //  Returns an instance of BCryptPasswordEncoder, which will be used to encode and match user passwords
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();  // Use strong password hashing
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();  // Provide authentication manager from Spring context
     }
 }
+
 
 
 /*

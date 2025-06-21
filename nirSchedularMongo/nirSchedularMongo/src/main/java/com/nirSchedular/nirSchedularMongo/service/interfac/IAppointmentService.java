@@ -7,15 +7,15 @@ import java.time.LocalDate;
 
 public interface IAppointmentService {
 
-    /**
-     * Creates a new appointment document in the database.
-     * This method is typically called when a user confirms their booking.
-     * @param userId The ID of the user making the booking.
-     * @param appointment The appointment details to book.
-     * @return The booked appointment with updated status and confirmation code.
-     */
 
-    Response bookAppointment(String userId, Appointment appointment);
+    /**
+     * Books an appointment for a user by their email.
+     * @param userEmail The email of the user booking the appointment.
+     * @param appointment The appointment details to be booked.
+     * @return A response indicating success or failure of the booking.
+     */
+    Response bookAppointmentByEmail(String userEmail, Appointment appointment);
+
 
     /**
      * Retrieves all appointment documents.
