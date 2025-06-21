@@ -29,10 +29,9 @@ const BookingForm = ({ userId }) => {
 
   return (
     <form className="booking-form" onSubmit={onSubmit}>
-      <h2>טופס הזמנת תור</h2>
+      <h2>טופס הזמנת הדרכה</h2>
 
-      {/* Full Name Field */}
-      <label>שם מלא:</label>
+      {/* <label>שם מלא:</label>
       <input
         type="text"
         name="fullName"
@@ -41,7 +40,6 @@ const BookingForm = ({ userId }) => {
         required
       />
 
-      {/* Email Field */}
       <label>אימייל:</label>
       <input
         type="email"
@@ -51,7 +49,6 @@ const BookingForm = ({ userId }) => {
         required
       />
 
-      {/* Phone Field */}
       <label>טלפון:</label>
       <input
         type="tel"
@@ -59,7 +56,7 @@ const BookingForm = ({ userId }) => {
         value={formData.phone}
         onChange={handleChange}
         required
-      />
+      /> */}
 
       {/* Date Field */}
       <label>תאריך:</label>
@@ -79,7 +76,7 @@ const BookingForm = ({ userId }) => {
         onChange={handleChange}
         required
       >
-        <option value="">בחר משבצת</option>
+        <option value="">בחר משבצת זמן</option>
         <option value="morning">בוקר</option>
         <option value="evening">ערב</option>
       </select>
