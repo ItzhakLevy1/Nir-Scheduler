@@ -4,6 +4,8 @@ import com.nirSchedular.nirSchedularMongo.dto.Response;
 import com.nirSchedular.nirSchedularMongo.entity.Appointment;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 public interface IAppointmentService {
 
@@ -16,6 +18,12 @@ public interface IAppointmentService {
      */
     Response bookAppointmentByEmail(String userEmail, Appointment appointment);
 
+    /**
+     * Retrieves a map of booked slots by date.
+     * This is useful for disabling unavailable dates and time slots in the UI.
+     * @return A map where each key is a LocalDate and the value is a list of booked time slots (e.g., morning/evening).
+     */
+    Map<LocalDate, List<String>> getBookedSlotsMap();
 
     /**
      * Retrieves all appointment documents.

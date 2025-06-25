@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Map;
+
 
 import java.time.LocalDate;
 
@@ -39,6 +42,16 @@ public class AppointmentController {
 
         Response response = appointmentService.bookAppointmentByEmail(authenticatedEmail, appointment); // Call the service to book the appointment using the authenticated user's email
         return ResponseEntity.status(response.getStatusCode()).body(response);  // Return the response with the appropriate HTTP status code
+    }
+
+    /**
+     * Get all booked dates with their booked time slots (morning/evening)
+     * Useful for disabling unavailable dates and time slots in the UI
+     */
+    @GetMapping("/booked-slots")
+    public ResponseEntity<Map<LocalDate, List<String>>> getBookedSlots() {
+        Map<LocalDate, List<String>> bookedMap = appointmentService.getBookedSlotsMap();
+        return ResponseEntity.ok(bookedMap);
     }
 
 

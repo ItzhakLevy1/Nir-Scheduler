@@ -19,9 +19,11 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
 
     List<Appointment> findByTimeSlotAndIdNotIn(String timeSlot, List<String> bookedAppointmentIds); // Custom method to find appointments by type and exclude booked ones
 
-    List<Appointment> findByDateAndBookedFalse(LocalDate date);
+    List<Appointment> findByDateAndBookedFalse(LocalDate date); // Custom method to find all available appointments for a specific date
 
-    boolean existsByDateAndTimeSlotAndBookedTrue(LocalDate date, String timeSlot);
+    List<Appointment> findByBookedTrue();   // Custom method to find all booked appointments
+
+    boolean existsByDateAndTimeSlotAndBookedTrue(LocalDate date, String timeSlot);  // Custom method to check if an appointment is booked for a specific date and time slot
 
     /**
      * Find an appointment by its confirmation code (typically used to verify booking).

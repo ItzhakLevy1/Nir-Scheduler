@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 // @Service Marks this class as a service component in the Spring Framework, meaning it's a service that can be injected into other components.
 @Service
@@ -52,7 +53,7 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
         if (exists) {   // If an appointment is already booked for this date and time slot, return a conflict response
             return Response.builder()
-                    .message("An appointment is already booked for this date and time slot.")
+                    .message("התאריך או משבצת הזמן אינם זמינים, בחר תאריך או משבצת זמן שונים.")
                     .statusCode(HttpStatus.CONFLICT.value())
                     .build();
         }
@@ -102,6 +103,19 @@ public class AppointmentServiceImpl implements IAppointmentService {
                 .message("Appointment booked successfully.")
                 .data(saved)
                 .build();
+    }
+
+    // This method retrieves all booked slots and groups them by date, returning a map where each key is a date and the value is a list of time slots booked on that date.
+    @Override
+    public Map<LocalDate, List<String>> getBookedSlotsMap() {
+        List<Appointment> bookedAppointments = appointmentRepository.findByBookedTrue();    // Fetch all booked appointments
+
+        // Group the booked appointments by date and map each date to a list of time slots
+        return bookedAppointments.stream()  // Stream through the list of booked appointments
+                .collect(Collectors.groupingBy( // Group by date
+                        Appointment::getDate,   // Use the appointment date as the key
+                        Collectors.mapping(Appointment::getTimeSlot, Collectors.toList())   // Collect the time slots into a list for each date
+                ));
     }
 
     @Override
