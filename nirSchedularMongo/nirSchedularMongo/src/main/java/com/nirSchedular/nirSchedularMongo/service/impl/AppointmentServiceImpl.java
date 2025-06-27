@@ -67,30 +67,31 @@ public class AppointmentServiceImpl implements IAppointmentService {
         Appointment saved = appointmentRepository.save(appointment);
 
         String htmlContent = String.format("""
-            <div dir=\"rtl\" style=\"text-align: right; font-family: Arial, sans-serif;\">
-                <p>Hi %s,</p>
-                <p>Your appointment has been confirmed. Here are the details:</p>
-                <ul>
-                    <li>Confirmation Code: %s</li>
-                    <li>Date: %s</li>
-                    <li>Time Slot: %s</li>
-                    <li>Contact: <a href=\"tel:0526126120\">052-612-612-0</a></li>
-                    <li>
-                        Navigate: <a href=\"https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17\" 
-                                      style=\"color: #1a73e8; text-decoration: none;\" target=\"_blank\">
-                                      Eliahu Eitan 3, Beit Giron - Room 107, Rishon LeZion
-                        </a>
-                    </li>
-                </ul>
-                <p>Looking forward to seeing you.</p>
-                <p>Gova - Height Work Training</p>
-            </div>
-            """,
+    <div dir=\"rtl\" style=\"text-align: right; font-family: Arial, sans-serif;\">
+        <p>שלום %s,</p>
+        <p>ההזמנה שלך נקלטה בהצלחה. הנה פרטי ההזמנה:</p>
+        <ul>
+            <li>קוד אישור: %s</li>
+            <li>תאריך: %s</li>
+            <li>משבצת זמן: %s</li>
+            <li>ליצירת קשר: <a href=\"tel:0526126120\">052-612-612-0</a></li>
+            <li>
+                ניווט: <a href=\"https://ul.waze.com/ul?ll=31.993925,34.764165&navigate=yes&zoom=17\"
+                          style=\"color: #1a73e8; text-decoration: none;\" target=\"_blank\">
+                          אליהו איתן 3, בית גירון - חדר 107, ראשון לציון
+                </a>
+            </li>
+        </ul>
+        <p>מחכים לראותך!</p>
+        <p>א.א גובה - הדרכות עבודה בגובה</p>
+    </div>
+    """,
                 user.getName(),
                 code,
                 appointment.getDate(),
                 Enums.TimeSlot.valueOf(appointment.getTimeSlot().toUpperCase()).getHebrewLabel()
         );
+
 
         emailService.sendEmail(
                 appointment.getUserEmail(),
