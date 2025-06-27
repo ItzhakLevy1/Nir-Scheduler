@@ -4,6 +4,7 @@ import DatePicker, { registerLocale } from "react-datepicker";
 import { he } from "date-fns/locale";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+import toastr from "toastr";
 import "./BookingForm.css";
 
 // Register Hebrew locale for the date picker
@@ -88,7 +89,7 @@ const BookingForm = ({ userId }) => {
         },
       })
       .then(() => {
-        alert("ההזמנה בוצעה בהצלחה!");
+        toastr.success("ההזמנה בוצעה בהצלחה!");
 
         // Refresh booked slots from server after successful booking
         axios

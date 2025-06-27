@@ -16,8 +16,7 @@ toastr.options = {
   closeButton: true,
   progressBar: true,
   timeOut: "5000",
-  extendedTimeOut: "1000",
-  toastClass: "toast toast-error", // Add custom class for error toasts
+  extendedTimeOut: "1000", // Removed toastClass to allow default styling
 };
 
 function App() {
