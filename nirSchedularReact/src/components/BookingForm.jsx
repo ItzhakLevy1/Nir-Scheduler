@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import toastr from "toastr";
 import "./BookingForm.css";
+import Spinner from "react-bootstrap/Spinner"; // Import Spinner from react-bootstrap
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // Register Hebrew locale for the date picker
 registerLocale("he", he);
@@ -24,6 +26,9 @@ const BookingForm = ({ userId }) => {
 
   // List of time slots available for the selected date
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+
+  // Loading state for spinner
+  const [loading, setLoading] = useState(false);
 
   // Load JWT token from localStorage
   const token = localStorage.getItem("token");
@@ -45,7 +50,8 @@ const BookingForm = ({ userId }) => {
   }, []);
 
   // Called when a user selects a date
-  const handleDateChange = (selectedDate) => {// selectedDate is a Date object that the user picks in the date picker
+  const handleDateChange = (selectedDate) => {
+    // selectedDate is a Date object that the user picks in the date picker
 
     // Reset selected time slot when changing the date to prevent mismatches from previous selections of time slots
     setFormData({ date: selectedDate, timeSlot: "" });
@@ -58,7 +64,8 @@ const BookingForm = ({ userId }) => {
   };
 
   // Check if a date should be disabled (both slots booked)
-  const isDateDisabled = (date) => {  // date is a Date object that the user picks in the date picker
+  const isDateDisabled = (date) => {
+    // date is a Date object that the user picks in the date picker
     const dateAsKey = format(date, "yyyy-MM-dd"); // Format date to "yyyy-MM-dd" for consistent keying for bookedMap
     const slots = bookedMap[dateAsKey]; // Get booked slots for this date
     return Array.isArray(slots) && slots.length === 2; // If both morning & evening are booked
@@ -73,6 +80,8 @@ const BookingForm = ({ userId }) => {
       alert("בחר תאריך ומשבצת זמן זמינים");
       return;
     }
+
+    setLoading(true); // Show spinner
 
     // Prepare data to send to server
     const payload = {
@@ -107,48 +116,64 @@ const BookingForm = ({ userId }) => {
       .catch((err) => {
         alert("שגיאה בעת שליחת ההזמנה.");
         console.error(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="booking-form">
-        <h2>הזמנת הדרכה</h2>
-
-        {/* Date picker input */}
-        <label>תאריך:</label>
-        <DatePicker
-          selected={formData.date}  // Selected date for the date picker
-          onChange={handleDateChange}
-          dateFormat="dd/MM/yyyy"
-          locale="he"
-          minDate={new Date()}
-          filterDate={(date) => !isDateDisabled(date)} // Disable fully booked dates
-          placeholderText="בחר תאריך פנוי"
-          className="date-picker"
-        />
-
-        {/* Time slot dropdown */}
-        <label>משבצת זמן:</label>
-        <select
-          name="timeSlot"
-          value={formData.timeSlot} // Selected time slot for the dropdown
-          onChange={(e) =>
-            setFormData({ ...formData, timeSlot: e.target.value })  // Update time slot when user selects from dropdown
-          }
-          required
+      {loading ? (
+        <div
+          className="d-flex justify-content-center align-items-center spinner-container"
+          style={{ minHeight: "150px" }}
         >
-          <option value="">בחר משבצת זמן</option>
-          {availableTimeSlots.map((slot) => ( // Map through available time slots and create options
-            <option key={slot} value={slot}>
-              {slot === "morning" ? "בוקר" : "ערב"}
-            </option>
-          ))}
-        </select>
+          <Spinner animation="border" role="status" className="big-spinner" />
+        </div>
+      ) : (
+        <div className="booking-form">
+          <h2>הזמנת הדרכה</h2>
 
-        {/* Submit button */}
-        <button type="submit">שלח</button>
-      </div>
+          {/* Date picker input */}
+          <label>תאריך:</label>
+          <DatePicker
+            selected={formData.date} // Selected date for the date picker
+            onChange={handleDateChange}
+            dateFormat="dd/MM/yyyy"
+            locale="he"
+            minDate={new Date()}
+            filterDate={(date) => !isDateDisabled(date)} // Disable fully booked dates
+            placeholderText="בחר תאריך פנוי"
+            className="date-picker"
+          />
+
+          {/* Time slot dropdown */}
+          <label>משבצת זמן:</label>
+          <select
+            name="timeSlot"
+            value={formData.timeSlot} // Selected time slot for the dropdown
+            onChange={
+              (e) => setFormData({ ...formData, timeSlot: e.target.value }) // Update time slot when user selects from dropdown
+            }
+            required
+          >
+            <option value="">בחר משבצת זמן</option>
+            {availableTimeSlots.map(
+              (
+                slot // Map through available time slots and create options
+              ) => (
+                <option key={slot} value={slot}>
+                  {slot === "morning" ? "בוקר" : "ערב"}
+                </option>
+              )
+            )}
+          </select>
+
+          {/* Submit button */}
+          <button type="submit">שלח</button>
+        </div>
+      )}
     </form>
   );
 };

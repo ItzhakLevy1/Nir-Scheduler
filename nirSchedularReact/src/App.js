@@ -16,7 +16,7 @@ toastr.options = {
   closeButton: true,
   progressBar: true,
   timeOut: "5000",
-  extendedTimeOut: "1000", // Removed toastClass to allow default styling
+  extendedTimeOut: "1000",
 };
 
 function App() {

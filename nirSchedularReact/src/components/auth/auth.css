@@ -7,6 +7,11 @@
   border-radius: 5px;
   background-color: #fff;
   margin: 20px auto 50px auto;
+  /* min-height: 50vh; */
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; */
 }
 
 .auth-container h2 {
@@ -45,7 +50,7 @@
 }
 
 .form-group input {
-  width: 90%;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -60,6 +65,7 @@ button[type="submit"] {
   transition: background-color 0.3s ease;
   font-weight: 800;
   border-radius: 10px;
+  width: 100%;
 }
 
 button[type="submit"]:hover {
@@ -67,3 +73,37 @@ button[type="submit"]:hover {
 }
 
 /**REGISTRATION PAGE END HERE*/
+
+/* SPINNER */
+
+.spinner-container {
+  min-height: 150px;
+}
+
+.big-spinner {
+  width: 5rem !important;
+  height: 5rem !important;
+  border-width: 0.7em !important;
+}
+
+.big-spinner-login {
+  width: 5rem !important;
+  height: 5rem !important;
+  border-width: 0.7em !important;
+}
+
+/* Ensure footer stays at the bottom of the page */
+body,
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}

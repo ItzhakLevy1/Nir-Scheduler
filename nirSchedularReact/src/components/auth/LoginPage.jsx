@@ -70,7 +70,7 @@ function LoginPage() {
         console.log("[Login] Stored token:", storedToken);
         console.log("[Login] Stored role:", storedRole);
         console.log("[Login] Stored userId:", storedUserId);
-        window.dispatchEvent(new Event("nir-auth-change")); // A custom event to notify other components of login/logout actions (auth change) 
+        window.dispatchEvent(new Event("nir-auth-change")); // A custom event to notify other components of login/logout actions (auth change)
         navigate(from, { replace: true }); // Redirect to the page the user came from or fallback to "/home"
       }
     } catch (error) {
@@ -91,9 +91,16 @@ function LoginPage() {
 
       {/* Conditionally render the spinner or the login form */}
       {loading ? (
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">טוען...</span>
-        </Spinner>
+        <div
+          className="d-flex justify-content-center align-items-center spinner-container"
+          // style={{ minHeight: "550px" }}
+        >
+          <Spinner
+            animation="border"
+            role="status"
+            className="big-spinner-login"
+          />
+        </div>
       ) : (
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -114,7 +121,9 @@ function LoginPage() {
               required // Ensures the field is required
             />
           </div>
-          <button type="submit">התחבר</button>{" "}
+          <button className="loginBtn" type="submit">
+            התחבר
+          </button>{" "}
           {/* Triggers the handleSubmit function */}
         </form>
       )}
